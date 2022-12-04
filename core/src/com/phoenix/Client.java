@@ -4,7 +4,7 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
-//just a push test
+//just a push test 2
 public class Client extends ApplicationAdapter {
 	SpriteBatch batch;
 	Texture img;
