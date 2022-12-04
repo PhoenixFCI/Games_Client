@@ -1,31 +1,86 @@
 package com.phoenix;
 
-import com.badlogic.gdx.ApplicationAdapter;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.utils.ScreenUtils;
+import Game1.test;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.*;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
+
 //just a push test 2
-public class Client extends ApplicationAdapter {
-	SpriteBatch batch;
-	Texture img;
-	
-	@Override
-	public void create () {
-		batch = new SpriteBatch();
-		img = new Texture("badlogic.jpg");
+public class Client implements Screen
+{
+	private MultipleScreen multi;
+	private Stage stage;
+	private Button button1;
+	private Skin myskin;
+
+	public Client(MultipleScreen x)
+	{
+		multi = x;
+
+
+		stage = new Stage(new ScreenViewport());
+		Gdx.input.setInputProcessor(stage);
+		myskin = new Skin(Gdx.files.internal("Skin/glassyui/glassy-ui.json"));
+
+		int row_height = Gdx.graphics.getWidth() / 12;
+		int col_width = Gdx.graphics.getWidth() / 12;
+
+		button1 = new Button(myskin,"small");
+		button1.setSize(col_width*4,row_height);
+		button1.setPosition(col_width,Gdx.graphics.getHeight()-row_height*3);
+		button1.addListener(new ClickListener()
+		{
+			@Override
+			public void clicked(InputEvent event, float x, float y)
+			{
+				multi.changeScreen( new test(multi));
+			}
+		});
+		stage.addActor(button1);
 	}
 
 	@Override
-	public void render () {
-		ScreenUtils.clear(1, 0, 0, 1);
-		batch.begin();
-		batch.draw(img, 0, 0);
-		batch.end();
+	public void show() {
+
 	}
-	
+
 	@Override
-	public void dispose () {
-		batch.dispose();
-		img.dispose();
+	public void render(float delta)
+	{
+		Gdx.gl.glClearColor(1, 1, 1, 1);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		stage.act();
+		stage.draw();
+	}
+
+	@Override
+	public void resize(int width, int height) {
+
+	}
+
+	@Override
+	public void pause() {
+
+	}
+
+	@Override
+	public void resume() {
+
+	}
+
+	@Override
+	public void hide() {
+
+	}
+
+	@Override
+	public void dispose()
+	{
+		myskin.dispose();
 	}
 }
