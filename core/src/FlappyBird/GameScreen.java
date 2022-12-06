@@ -1,4 +1,4 @@
-package Game2;
+package FlappyBird;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
@@ -14,10 +14,11 @@ public class GameScreen  implements Screen {
     MultipleScreen game;
     public enum State
     {
-        PAUSE,
-        RUN,
-        //RESUME,
         //STOPPED
+        PAUSE,
+        //RESUME
+        RUN,
+
     }
 
     private State state = State.RUN;

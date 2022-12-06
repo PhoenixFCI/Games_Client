@@ -1,7 +1,7 @@
 package com.phoenix;
 
 import Game1.test;
-import Game2.GameScreen;
+import FlappyBird.GameScreen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
