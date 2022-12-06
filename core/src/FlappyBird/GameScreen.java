@@ -9,6 +9,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.viewport.*;
 import com.phoenix.MultipleScreen;
 
+import java.util.Vector;
+
 
 public class GameScreen  implements Screen {
     MultipleScreen game;
@@ -26,6 +28,8 @@ public class GameScreen  implements Screen {
     //graphics
     private Texture background;
     private SpriteBatch batch;
+    private Objects player;
+    private Texture robotTexture;
 
     //timing
     private float BackgroundMove;
@@ -43,11 +47,15 @@ public class GameScreen  implements Screen {
     @Override
     public void show()
     {
+        //camera and rendering things:
         batch=new SpriteBatch();
-        //Screen
         camera = new OrthographicCamera();
-        background = new Texture("flappy-bird-assets-master/sprites/background-night.png");
         viewport = new FillViewport(WorldWidth,WorldHeight,camera);
+
+        //textures and objects in the game:
+        background = new Texture("Flappy Bird Game/sprites/background-night.png");
+        robotTexture=new Texture("Flappy Bird Game/sprites/bluebird-upflap.png");
+        player=new Objects(robotTexture,robotTexture.getWidth()*2,robotTexture.getHeight()*2,5,0);
     }
 
     @Override
@@ -68,6 +76,7 @@ public class GameScreen  implements Screen {
                 batch.begin();
                 batch.draw(background,-BackgroundMove,0,WorldWidth,WorldHeight);
                 batch.draw(background,-BackgroundMove+WorldWidth,0,WorldWidth,WorldHeight);
+                player.draw(batch);
                 batch.end();
                 break;
 
@@ -78,8 +87,8 @@ public class GameScreen  implements Screen {
                 }
                 camera.update();
                 batch.begin();
-                batch.draw(background,-BackgroundMove,0,WorldWidth,WorldHeight);
-                batch.draw(background,-BackgroundMove+WorldWidth,0,WorldWidth,WorldHeight);
+                batch.draw(background,0,0,WorldWidth,WorldHeight);
+                //batch.draw(background,-BackgroundMove+WorldWidth,0,WorldWidth,WorldHeight);
                 batch.end();
                 break;
         }
