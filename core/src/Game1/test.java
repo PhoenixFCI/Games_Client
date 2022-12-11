@@ -4,7 +4,6 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.phoenix.Client;
 import com.phoenix.MultipleScreen;
 
 public class test implements Screen {
@@ -21,7 +20,7 @@ public class test implements Screen {
     public void show()
     {
         batch = new SpriteBatch();
-        img = new Texture("Game1\\badlogic.jpg");
+        img = new Texture("Game1\\image 1.jpg");
     }
 
     @Override
