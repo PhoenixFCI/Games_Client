@@ -1,6 +1,7 @@
 package com.phoenix;
 
 import Game1.test;
+import FlappyBird.GameScreen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -16,12 +17,12 @@ public class Client implements Screen
 	private MultipleScreen multi;
 	private Stage stage;
 	private Button button1;
+	private Button buttonH;
 	private Skin myskin;
 
 	public Client(MultipleScreen x)
 	{
 		multi = x;
-
 
 		stage = new Stage(new ScreenViewport());
 		Gdx.input.setInputProcessor(stage);
@@ -33,6 +34,9 @@ public class Client implements Screen
 		button1 = new Button(myskin,"small");
 		button1.setSize(col_width*4,row_height);
 		button1.setPosition(col_width,Gdx.graphics.getHeight()-row_height*3);
+		buttonH = new Button(myskin,"small");
+		buttonH.setSize(col_width*4,row_height);
+		buttonH.setPosition(col_width,Gdx.graphics.getHeight()-row_height);
 		button1.addListener(new ClickListener()
 		{
 			@Override
@@ -41,7 +45,19 @@ public class Client implements Screen
 				multi.changeScreen( new test(multi));
 			}
 		});
+
+		buttonH.addListener(new ClickListener()
+		{
+			@Override
+			public void clicked(InputEvent event, float x, float y)
+			{
+				multi.changeScreen( new GameScreen(multi));
+			}
+		});
+
+
 		stage.addActor(button1);
+		stage.addActor(buttonH);
 	}
 
 	@Override
