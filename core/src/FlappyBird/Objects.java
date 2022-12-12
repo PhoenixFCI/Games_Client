@@ -6,13 +6,13 @@ import com.badlogic.gdx.math.Rectangle;
 
 public class Objects {
     //graphics
-    private Texture robot;
+    private Texture texture;
 
     //dimensions&positions
     private float width,height,xPos,yPos;
 
-    public Objects(Texture robot, float width, float height, float xPos, float yPos) {
-        this.robot = robot;
+    public Objects(Texture texture, float width, float height, float xPos, float yPos) {
+        this.texture = texture;
         this.width = width;
         this.height = height;
         this.xPos = xPos;
@@ -27,12 +27,15 @@ public class Objects {
         return new Rectangle(xPos,yPos,width,height);
     }
     public void draw(SpriteBatch batch){
-        batch.draw(robot,xPos,yPos,width,height);
+        batch.draw(texture,xPos,yPos,width,height);
     }
 
 
     public void move(int x,int y){
         xPos+=x;
         yPos+=y;
+    }
+    public void setTexture(Texture texture){
+        this.texture=texture;
     }
 }
