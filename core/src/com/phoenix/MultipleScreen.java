@@ -12,11 +12,6 @@ public class MultipleScreen extends Game
     {
         changeScreen(new Client(this));
     }
-
-//    public void configuratuion(Lwjgl3ApplicationConfiguration config)
-//    {
-//
-//    }
     public void changeScreen(Screen newScreen){
         Screen oldScreen = getScreen();
         setScreen(newScreen);
