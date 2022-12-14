@@ -74,17 +74,19 @@ public class GameScreen  implements Screen {
                 if(Gdx.input.isKeyPressed(Input.Keys.ESCAPE))
                     pause();
 
-                if(Gdx.input.justTouched()){
+                if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)){
+
                     player.jump();
                     //I was testing how can I make Animations: by changing the photo everytime the user press button
                     player.setTexture(new Texture("Flappy Bird Game/sprites/redbird-downflap.png"));
                 }
-
+                if(Gdx.input.isKeyPressed(Input.Keys.D))
+                    player.move(2,0);
                 if(Gdx.input.isKeyPressed(Input.Keys.A))
                     player.move(-2,0);
 
-                if (!Gdx.input.isKeyPressed(Input.Keys.ANY_KEY)) {
-                    player.update(delta);
+                if (!Gdx.input.isKeyPressed(Input.Keys.ANY_KEY)||!Gdx.input.isKeyJustPressed(Input.Keys.ANY_KEY)) {
+                  //  player.update(delta);
                     player.setTexture(new Texture("Flappy Bird Game/sprites/bluebird-upflap.png"));
                 }
                 if (player.intersects(enemy.getCoordinates()))
@@ -101,10 +103,10 @@ public class GameScreen  implements Screen {
                 break;
 
             case PAUSE:
-                if(Gdx.input.isKeyPressed(Input.Keys.SPACE))
-                {
-                   resume();
-                }
+//                if(Gdx.input.isKeyPressed(Input.Keys.SPACE))
+//                {
+//                   resume();
+//                }
                 camera.update();
                 batch.begin();
                 batch.draw(background,0,0,WorldWidth,WorldHeight);
