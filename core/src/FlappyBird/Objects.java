@@ -3,7 +3,7 @@ package FlappyBird;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.Vector2;
 
 public class Objects {
     //graphics
@@ -11,14 +11,14 @@ public class Objects {
 
     //dimensions&positions
     private float width,height ;
-    private Vector3 position= new Vector3(20,300,0) , velocity= new Vector3(0,0,0);
+    private Vector2 position , velocity;
     private static final int Gravity = -15;
     public Objects(Texture texture, float width, float height, float xPos, float yPos) {
         this.texture = texture;
         this.width = width;
         this.height = height;
-        this.position.x = xPos;
-        this.position.y = yPos;
+        this.position=new Vector2(xPos,yPos);
+        this.velocity=new Vector2(0,0);
     }
     public  Objects(){}
     //collision Detection
@@ -33,33 +33,30 @@ public class Objects {
         batch.draw(texture,position.x,position.y,width,height);
     }
 
-    public Vector3 getPosition() {
+    public Vector2 getPosition() {
         return position;
     }
 
     public void move(int x, float y){
-        position.add(x,y,0);
+        position.add(x,y);
     }
-    public void update(float dt){
-        if(position.y<0)
-        velocity.add(0,Gravity,0);
+    public void update(float dt)
+    {
+        if(position.y>0)
+        velocity.add(0,Gravity);
 
     velocity.scl(dt);
-    position.add(0,velocity.y,0);
+    position.add(0,velocity.y);
     velocity.scl(1/dt);
     if(position.y<0){
         position.y=0;
     }
-        System.out.println("Update is working");
+
     }
     public  void jump(){
-        velocity.y = 300;
-
+        velocity.y = 500;
     }
 
-
-
-    public void move(){}
 
     public Texture getTexture() {
         return texture;

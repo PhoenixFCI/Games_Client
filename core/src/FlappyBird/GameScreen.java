@@ -3,11 +3,14 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.viewport.*;
 import com.phoenix.MultipleScreen;
+
+import java.util.Vector;
 
 
 public class GameScreen  implements Screen {
@@ -37,6 +40,9 @@ public class GameScreen  implements Screen {
     //World parameters
     private final float WorldWidth= Gdx.graphics.getWidth();
     private final float WorldHeight=Gdx.graphics.getHeight();
+
+    //font
+    GameFont scoreFont;
     public GameScreen(MultipleScreen screen){
      game =screen;
     }
@@ -50,19 +56,21 @@ public class GameScreen  implements Screen {
         //camera and rendering things:
         batch=new SpriteBatch();
         camera = new OrthographicCamera();
-        viewport = new FillViewport(WorldWidth,WorldHeight,camera);
+        viewport = new StretchViewport(WorldWidth,WorldHeight,camera);
 
         //textures and objects in the game:
 
         background = new Texture("Flappy Bird Game/sprites/background-night.png");
         playerTexture =new Texture("Flappy Bird Game/sprites/bluebird-upflap.png");
-        player=new Objects(playerTexture, playerTexture.getWidth()*2, playerTexture.getHeight()*4,20,0);
+        player=new Objects(playerTexture, playerTexture.getWidth()*2, playerTexture.getHeight()*2,20,0);
         enemyTexture=new Texture("Flappy Bird Game/sprites/pipe-red.png");
-        enemy=new Objects(enemyTexture,enemyTexture.getWidth(),enemyTexture.getHeight(),WorldWidth-80,0);
-
+        enemy=new Objects(enemyTexture,enemyTexture.getWidth(),enemyTexture.getHeight(),WorldWidth-400,0);
+        //Score font
+        String fontPath = "Flappy Bird Game/joystix.monospace-regular.ttf";
+        scoreFont=new GameFont(fontPath,25, Color.WHITE,Color.BLACK,1);
     }
 
-
+    int score=0;
     @Override
     public void render(float delta)
     {
@@ -74,8 +82,7 @@ public class GameScreen  implements Screen {
                 if(Gdx.input.isKeyPressed(Input.Keys.ESCAPE))
                     pause();
 
-                if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)){
-
+                if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)&&player.getPosition().y==0){
                     player.jump();
                     //I was testing how can I make Animations: by changing the photo everytime the user press button
                     player.setTexture(new Texture("Flappy Bird Game/sprites/redbird-downflap.png"));
@@ -86,27 +93,31 @@ public class GameScreen  implements Screen {
                     player.move(-2,0);
 
                 if (!Gdx.input.isKeyPressed(Input.Keys.ANY_KEY)||!Gdx.input.isKeyJustPressed(Input.Keys.ANY_KEY)) {
-                  //  player.update(delta);
+                    player.update(delta);
                     player.setTexture(new Texture("Flappy Bird Game/sprites/bluebird-upflap.png"));
                 }
-                if (player.intersects(enemy.getCoordinates()))
-                    System.out.println("true");
+                if (player.intersects(enemy.getCoordinates())){
+                    System.out.println(player.getCoordinates().getX());
+                    System.out.println(enemy.getCoordinates().getX());
+                }
+
 
                 camera.update();
                 viewport.apply();
                 batch.begin();
                 batch.draw(background,-BackgroundMove,0,WorldWidth,WorldHeight);
                 batch.draw(background,-BackgroundMove+WorldWidth,0,WorldWidth,WorldHeight);
-                batch.draw(player.getTexture(),player.getPosition().x,player.getPosition().y);
+                player.draw(batch);
                 enemy.draw(batch);
+                scoreFont.draw(batch,"Score: "+score,5,WorldHeight-scoreFont.textHeight());
                 batch.end();
                 break;
 
             case PAUSE:
-//                if(Gdx.input.isKeyPressed(Input.Keys.SPACE))
-//                {
-//                   resume();
-//                }
+                if(Gdx.input.isKeyPressed(Input.Keys.SPACE))
+                {
+                   resume();
+                }
                 camera.update();
                 batch.begin();
                 batch.draw(background,0,0,WorldWidth,WorldHeight);
