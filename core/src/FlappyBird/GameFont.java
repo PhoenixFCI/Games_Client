@@ -33,7 +33,7 @@ public class GameFont {
     }
 
     public void draw(SpriteBatch batch,String text,float x,float y){
-         this.text.setText(font,text);
+        this.text.setText(font,text);
         font.draw(batch,text,x,y);
     }
     public void dispose(){
@@ -41,7 +41,7 @@ public class GameFont {
         fontGenerator.dispose();
     }
     public float textWidth(){
-       return this.text.width;
+        return this.text.width;
     }
     public float textHeight(){
         return this.text.height;
