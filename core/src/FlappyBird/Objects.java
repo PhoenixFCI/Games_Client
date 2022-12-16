@@ -7,12 +7,12 @@ import com.badlogic.gdx.math.Vector2;
 
 public class Objects {
     //graphics
-    private Texture texture;
+    protected Texture texture;
 
     //dimensions&positions
-    private float width,height ;
-    private Vector2 position , velocity;
-    private static final int Gravity = -15;
+    protected float width,height ;
+    protected Vector2 position , velocity;
+    protected static final int Gravity = -15;
     public Objects(Texture texture, float width, float height, float xPos, float yPos) {
         this.texture = texture;
         this.width = width;
@@ -20,7 +20,7 @@ public class Objects {
         this.position=new Vector2(xPos,yPos);
         this.velocity=new Vector2(0,0);
     }
-    public  Objects(){}
+
     //collision Detection
     public boolean intersects(Rectangle otherObject){
         Rectangle thisObject=new Rectangle(position.x,position.y,width,height);
@@ -43,23 +43,18 @@ public class Objects {
     public void update(float dt)
     {
         if(position.y>0)
-        velocity.add(0,Gravity);
+            velocity.add(0,Gravity);
 
-    velocity.scl(dt);
-    position.add(0,velocity.y);
-    velocity.scl(1/dt);
-    if(position.y<0){
-        position.y=0;
-    }
+        velocity.scl(dt);
+        position.add(0,velocity.y);
+        velocity.scl(1/dt);
+
+        if(position.y<0)
+            position.y=0;
 
     }
     public  void jump(){
         velocity.y = 500;
-    }
-
-
-    public Texture getTexture() {
-        return texture;
     }
 
     public void setTexture(Texture texture){
