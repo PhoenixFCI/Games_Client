@@ -8,8 +8,12 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.*;
 import com.phoenix.MultipleScreen;
+
+import java.util.Random;
+import java.util.Vector;
 
 
 public class GameScreen  implements Screen {
@@ -29,8 +33,8 @@ public class GameScreen  implements Screen {
     //graphics
     private Texture backgroundTexture;
     private SpriteBatch batch;
-    private Objects player,enemy;
-    private Texture playerTexture,enemyTexture;
+    private Objects player;
+    private Texture playerRunTexture,enemyTexture;
     //private Motions animation;
 
     //timing
@@ -49,6 +53,11 @@ public class GameScreen  implements Screen {
     private Viewport viewport;
     private Camera camera;
 
+    //nothing
+    private final Array<Enemies> enemies = new Array<>();
+    private final int distance=150;
+    private Random rand;
+
     @Override
     public void show()
     {
@@ -56,17 +65,19 @@ public class GameScreen  implements Screen {
         batch=new SpriteBatch();
         camera = new OrthographicCamera();
         viewport = new StretchViewport(WorldWidth,WorldHeight,camera);
-
         //textures and objects in the game:
 
         backgroundTexture = new Texture("Robot/background2.jpg");
-        playerTexture =new Texture("Robot/run.png");
+        playerRunTexture =new Texture("Robot/Run.png");
         enemyTexture=new Texture("Robot/pxArt.png");
-        player=new Objects(playerTexture, playerTexture.getWidth()*2, playerTexture.getHeight()*2,20,0);
-        enemy=new Objects(enemyTexture,enemyTexture.getWidth()/15,enemyTexture.getHeight()/10,400,0);
+        player=new Objects(playerRunTexture, playerRunTexture.getWidth()*0.95f, playerRunTexture.getHeight(),40,3);
         //Score font
         String fontPath = "Flappy Bird Game/joystix.monospace-regular.ttf";
         scoreFont=new GameFont(fontPath,25, Color.WHITE,Color.BLACK,1);
+        rand=new Random();
+
+        //nothing
+
     }
 
     int currentScore=0;
@@ -84,33 +95,23 @@ public class GameScreen  implements Screen {
 
                 if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)&&player.getPosition().y==0){
                     player.jump();
-                    player.setTexture(new Texture("Robot/run.png"));
-                    currentScore++;
-                    highScore(currentScore);
                 }
-                if(Gdx.input.isKeyPressed(Input.Keys.D))
-                    player.move(2,0);
-                if(Gdx.input.isKeyPressed(Input.Keys.A))
-                    player.move(-2,0);
 
-                if(player.getPosition().y==0)
-                    player.setTexture(new Texture("Robot/run.png"));
+                System.out.println(enemies.size);;
+                //Enemies methods
+                    updateEnemies();
+                    spawnEnemies();
+                    EnemyDil();
+                    addScore();
+                    if(collision())
+                        pause();
 
-                else {
-                    player.setTexture(new Texture("Robot/jump.png"));
-                }
-                if (player.intersects(enemy.getCoordinates())){
-                    System.out.println(player.getCoordinates().getX());
-                    System.out.println(enemy.getCoordinates().getX());
-                }
-                System.out.println(prefs.getInteger("highscore"));
 
                 batch.begin();
-                batch.draw(backgroundTexture,-BackgroundMove,0,WorldWidth,WorldHeight);
-                batch.draw(backgroundTexture,-BackgroundMove+WorldWidth,0,WorldWidth,WorldHeight);
+                drawBackground();
                 player.draw(batch);
-                enemy.draw(batch);
-                scoreFont.draw(batch,"Score: "+currentScore,5,WorldHeight-scoreFont.textHeight());
+                drawEnemies();
+                drawScore();
                 batch.end();
                 break;
 
@@ -121,8 +122,10 @@ public class GameScreen  implements Screen {
                 }
                 camera.update();
                 batch.begin();
-                batch.draw(backgroundTexture,0,0,WorldWidth,WorldHeight);
-                batch.draw(backgroundTexture,-BackgroundMove+WorldWidth,0,WorldWidth,WorldHeight);
+                drawBackground();
+                player.draw(batch);
+                drawEnemies();
+                drawScore();
                 batch.end();
                 break;
         }
@@ -156,7 +159,8 @@ public class GameScreen  implements Screen {
         backgroundTexture.dispose();
         batch.dispose();
         enemyTexture.dispose();
-        playerTexture.dispose();
+        playerRunTexture.dispose();
+        Enemies.dispose();
     }
 
     public int highScore(int currentScore){
@@ -166,5 +170,66 @@ public class GameScreen  implements Screen {
         }
         return prefs.getInteger("highscore");
     }
+
+    public void newEnemies(){
+        Enemies enemy = new Enemies( WorldWidth +rand.nextInt(500));
+        enemies.add(enemy);
+    }
+
+    public void spawnEnemies(){
+        if (enemies.size==0)
+            newEnemies();
+        else{
+            Enemies lastEnemy= enemies.peek();
+            if(lastEnemy.getPosition().x<WorldWidth-distance)
+                newEnemies();
+        }
+    }
+
+    public boolean collision(){
+        for (int i = 0; i < enemies.size; i++) {
+            if (player.intersects(enemies.get(i).getCoordinates()))
+                return true;
+        }
+        return false;
+    }
+    public void EnemyDil(){
+        Enemies firstEnemy= enemies.first();
+        if (firstEnemy.getPosition().x<-WorldWidth)
+            enemies.removeValue(firstEnemy,true);
+
+    }
+
+    public void drawScore(){
+        scoreFont.draw(batch,"Score: "+currentScore,5,WorldHeight-scoreFont.textHeight());
+        scoreFont.draw(batch,"High Score: "+prefs.getInteger("highscore"),WorldWidth-scoreFont.textWidth()*2,WorldHeight-scoreFont.textHeight());
+    }
+    public void addScore(){
+        for (int i = 0; i < enemies.size; i++) {
+            int temp =(int)enemies.get(i).getPosition().x;
+            while (temp%4!=0)
+                    temp++;
+
+            if (40==temp)
+                currentScore++;
+            highScore(currentScore);
+        }
+    }
+    public void drawBackground(){
+        batch.draw(backgroundTexture,-BackgroundMove,0,WorldWidth,WorldHeight);
+        batch.draw(backgroundTexture,-BackgroundMove+WorldWidth,0,WorldWidth,WorldHeight);
+    }
+    public void drawEnemies(){
+        for (int i = 0; i < enemies.size; i++) {
+            enemies.get(i).draw(batch);
+        }
+    }
+
+    public void updateEnemies(){
+        for (int i = 0; i < enemies.size; i++) {
+            enemies.get(i).enemyUpdate(4);
+        }
+    }
+
 
 }
