@@ -12,16 +12,6 @@ public class GameFont {
     private FreeTypeFontGenerator.FreeTypeFontParameter parameter;
     private BitmapFont font;
     private GlyphLayout text = new GlyphLayout();
-    public GameFont(String Path,int size,Color color) {
-        this.fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal(Path));
-        this.parameter=new FreeTypeFontGenerator.FreeTypeFontParameter();
-        this.parameter.size=size;
-        this.parameter.color= Color.WHITE;
-        this.parameter.borderColor=Color.BLACK;
-        this.parameter.borderWidth=2;
-        this.font=fontGenerator.generateFont(parameter);
-    }
-
     public GameFont(String Path,int size,Color color,Color borderColor,int borderWidth) {
         this.fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal(Path));
         this.parameter=new FreeTypeFontGenerator.FreeTypeFontParameter();

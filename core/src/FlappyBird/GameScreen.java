@@ -104,8 +104,7 @@ public class GameScreen  implements Screen {
                     EnemyDil();
                     addScore();
                     if(collision())
-                        pause();
-
+                        game.changeScreen(new GameOver(game));;
 
                 batch.begin();
                 drawBackground();
