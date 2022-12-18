@@ -11,9 +11,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.*;
 import com.phoenix.MultipleScreen;
-
 import java.util.Random;
-import java.util.Vector;
 
 
 public class GameScreen  implements Screen {
@@ -33,7 +31,7 @@ public class GameScreen  implements Screen {
     //graphics
     private Texture backgroundTexture;
     private SpriteBatch batch;
-    private Objects player;
+    private Player player;
     private Texture playerRunTexture,enemyTexture;
     //private Motions animation;
 
@@ -70,7 +68,7 @@ public class GameScreen  implements Screen {
         backgroundTexture = new Texture("Robot/background2.jpg");
         playerRunTexture =new Texture("Robot/Run.png");
         enemyTexture=new Texture("Robot/pxArt.png");
-        player=new Objects(playerRunTexture, playerRunTexture.getWidth()*0.95f, playerRunTexture.getHeight(),40,3);
+        player=new Player(playerRunTexture, playerRunTexture.getWidth()*0.95f, playerRunTexture.getHeight(),40,3);
         //Score font
         String fontPath = "Flappy Bird Game/joystix.monospace-regular.ttf";
         scoreFont=new GameFont(fontPath,25, Color.WHITE,Color.BLACK,1);
