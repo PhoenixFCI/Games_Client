@@ -4,7 +4,7 @@ import Game1.test;
 import FlappyBird.GameScreen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
+//import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -16,9 +16,9 @@ import com.badlogic.gdx.*;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.badlogic.gdx.video.VideoPlayer;
-import com.badlogic.gdx.video.VideoPlayerCreator;
-import java.io.FileNotFoundException;
+//import com.badlogic.gdx.video.VideoPlayer;
+//import com.badlogic.gdx.video.VideoPlayerCreator;
+//import java.io.FileNotFoundException;
 
 
 public class Client implements Screen
@@ -49,6 +49,7 @@ public class Client implements Screen
 
 		int row_height = Gdx.graphics.getHeight() / 12;
 		int col_width = Gdx.graphics.getWidth() / 12;
+
 
 		button1 = new TextButton("Space Invader",mySkin,"small");
 		button1.setSize(col_width*4,row_height);
@@ -129,7 +130,7 @@ public class Client implements Screen
 		stage.draw();
 
 		batch.begin();
-		batch.draw(animation.getKeyFrame(elapsed), Gdx.graphics.getWidth()-(Gdx.graphics.getWidth() / 12)*5 , 400,button2.getWidth(), 300);
+		batch.draw(animation.getKeyFrame(elapsed), Gdx.graphics.getWidth()-(Gdx.graphics.getWidth() / 12)*5 , Gdx.graphics.getHeight()-450,button2.getWidth(), button2.getHeight() * 4);
 		//Texture frame = videoPlayer.getTexture();
 		/*if (frame != null)
 			batch.draw(frame,Gdx.graphics.getWidth()-(Gdx.graphics.getWidth() / 12)*5 , 400, button2.getWidth(), 300);*/
