@@ -18,6 +18,9 @@ import java.util.Vector;
 
 public class GameScreen  implements Screen {
     MultipleScreen game;
+
+    int width_window = (int) ((Gdx.graphics.getDisplayMode().width)*(55.0/100.0));  //Ratio of width @Kareem
+    int height_window = (int) ((Gdx.graphics.getDisplayMode().height)*(75.0/100.0)); //Ratio of height @Kareem
     public enum State
     {
         //STOPPED
@@ -84,6 +87,16 @@ public class GameScreen  implements Screen {
     @Override
     public void render(float delta)
     {
+        if(Gdx.input.isKeyJustPressed(Input.Keys.RIGHT))
+        {
+            Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
+        }
+
+        if(Gdx.input.isKeyJustPressed(Input.Keys.LEFT))
+        {
+            Gdx.graphics.setWindowedMode(width_window,height_window);
+        }
+
         switch (state)
         {
             case RUN:
@@ -93,7 +106,9 @@ public class GameScreen  implements Screen {
                 if(Gdx.input.isKeyPressed(Input.Keys.ESCAPE))
                     pause();
 
-                if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)&&player.getPosition().y==0){
+
+                if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)&&player.getPosition().y==0)
+                {
                     player.jump();
                 }
 

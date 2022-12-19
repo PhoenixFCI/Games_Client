@@ -12,6 +12,7 @@ public class MultipleScreen extends Game
     {
         changeScreen(new Client(this));
     }
+
     public void changeScreen(Screen newScreen){
         Screen oldScreen = getScreen();
         setScreen(newScreen);
