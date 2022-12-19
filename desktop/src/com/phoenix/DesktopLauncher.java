@@ -11,7 +11,6 @@ public class DesktopLauncher
 		config.setForegroundFPS(144);
 		config.useVsync(true);
 		config.setResizable(false);
-		//config.setFullscreenMode(Gdx.graphics.getDisplayMode());
 		int width = (int) ((Lwjgl3ApplicationConfiguration.getDisplayMode().width)*(55.0/100.0));  //Ratio of width @Kareem
 		int height = (int) ((Lwjgl3ApplicationConfiguration.getDisplayMode().height)*(75.0/100.0)); //Ratio of height @Kareem
 		config.setWindowedMode(width,height);
