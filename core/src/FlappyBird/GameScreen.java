@@ -3,6 +3,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -55,6 +57,8 @@ public class GameScreen  implements Screen {
     private final Array<Enemies> enemies = new Array<>();
     private final int distance=150;
     private Random rand;
+    private Sound jumpSound;
+    private Music backMusic;
 
     @Override
     public void show()
@@ -75,6 +79,10 @@ public class GameScreen  implements Screen {
         rand=new Random();
 
         //nothing
+        jumpSound= Gdx.audio.newSound(Gdx.files.internal("Robot/Jump.ogg"));
+        backMusic=Gdx.audio.newMusic(Gdx.files.internal("Robot/Dexters Laboratory.mp3"));
+        backMusic.setLooping(true);
+        backMusic.setVolume(0.5f);
 
     }
 
@@ -87,12 +95,14 @@ public class GameScreen  implements Screen {
             case RUN:
                 BackgroundMove++;
                 BackgroundMove=BackgroundMove%WorldWidth;
+                backMusic.play();
                 player.update(delta);
                 if(Gdx.input.isKeyPressed(Input.Keys.ESCAPE))
                     pause();
 
-                if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)&&player.getPosition().y==0){
+                if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)&&player.getPosition().y<=5){
                     player.jump();
+                    jumpSound.play();
                 }
 
                 System.out.println(enemies.size);;
@@ -101,9 +111,11 @@ public class GameScreen  implements Screen {
                     spawnEnemies();
                     EnemyDil();
                     addScore();
-                    if(collision())
-                        game.changeScreen(new GameOver(game));;
-
+                    if(collision()) {
+                        backMusic.stop();
+                        jumpSound.stop();
+                        game.changeScreen(new GameOver(game));
+                    }
                 batch.begin();
                 drawBackground();
                 player.draw(batch);
@@ -132,6 +144,7 @@ public class GameScreen  implements Screen {
     @Override
     public void resize(int width, int height) {
         viewport.update(width,height);
+
     }
 
     @Override
@@ -158,6 +171,7 @@ public class GameScreen  implements Screen {
         enemyTexture.dispose();
         playerRunTexture.dispose();
         Enemies.dispose();
+        scoreFont.dispose();
     }
 
     public int highScore(int currentScore){
@@ -170,6 +184,7 @@ public class GameScreen  implements Screen {
 
     public void newEnemies(){
         Enemies enemy = new Enemies( WorldWidth +rand.nextInt(500));
+
         enemies.add(enemy);
     }
 

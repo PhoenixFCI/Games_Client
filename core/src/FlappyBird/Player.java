@@ -26,7 +26,7 @@ public class Player extends Objects {
 
     }
     public  void jump(){
-        velocity.y = 650;
+        velocity.y = 700;
     }
 
     public void setTexture(Texture texture){
