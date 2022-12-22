@@ -98,5 +98,8 @@ public class Client implements Screen
 	public void dispose()
 	{
 		myskin.dispose();
+		stage.dispose();
+		buttonH.setDisabled(true);
+		button1.setDisabled(true);
 	}
 }

@@ -12,18 +12,17 @@ public class GameFont {
     private FreeTypeFontGenerator.FreeTypeFontParameter parameter;
     private BitmapFont font;
     private GlyphLayout text = new GlyphLayout();
-    public GameFont(String Path,int size,Color color) {
+    public GameFont(String Path,int size,Color color,Color borderColor,int borderWidth) {
         this.fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal(Path));
         this.parameter=new FreeTypeFontGenerator.FreeTypeFontParameter();
         this.parameter.size=size;
-        this.parameter.color= Color.WHITE;
-        this.parameter.borderColor=Color.BLACK;
-        this.parameter.borderWidth=2;
+        this.parameter.color= color;
+        this.parameter.borderColor=borderColor;
+        this.parameter.borderWidth=borderWidth;
         this.font=fontGenerator.generateFont(parameter);
     }
-
-    public GameFont(String Path,int size,Color color,Color borderColor,int borderWidth) {
-        this.fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal(Path));
+    public GameFont(int size,Color color,Color borderColor,int borderWidth) {
+        this.fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("Flappy Bird Game/joystix.monospace-regular.ttf"));
         this.parameter=new FreeTypeFontGenerator.FreeTypeFontParameter();
         this.parameter.size=size;
         this.parameter.color= color;
