@@ -1,6 +1,6 @@
 package com.phoenix;
 
-import Game1.test;
+import Game1.MainScreen;
 import FlappyBird.GameScreen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -63,7 +63,7 @@ public class Client implements Screen
 			@Override
 			public void clicked(InputEvent event, float x, float y)
 			{
-				multi.changeScreen( new test(multi));
+				multi.changeScreen( new MainScreen(multi));
 			}
 
 			@Override
