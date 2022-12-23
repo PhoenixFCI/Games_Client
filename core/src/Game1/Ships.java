@@ -12,56 +12,75 @@ abstract class Ships
 
     //positon
     Rectangle boundingBox;
+
     //laser info
     float laser_width,laser_height;
     float laser_speed;
-    float time_B_shots;
-    float time_since_lastshot=0;
-    //graphics
-    TextureRegion shipTextureRegion, sheildTextureRegion,laserTextureRegion;
+    float time_Between_shots;
+    float time_since_LastShot = 0;
 
-    public Ships(float xCenter,float yCenter,
-                  float width,float height,float m_speed,int sheild,
-                  float laser_width,
-                  float laser_height,float laser_speed,
-                  TextureRegion shipTextureRegion,
-                  TextureRegion shieldTextureRegion,TextureRegion laserTextureRegion)
+    //graphics
+    TextureRegion shipTextureRegion, shieldTextureRegion,laserTextureRegion;
+
+    public Ships(float m_speed,int shield,
+                  float width,float height,float xCenter,float yCenter,float laser_width,float laser_height,float laser_speed
+                  ,float time_Between_shots, TextureRegion shipTextureRegion,
+                  TextureRegion shieldTextureRegion, TextureRegion laserTextureRegion)
     {
         this.m_speed = m_speed;
-        this.sheild =sheild;
-        this.boundingBox=new Rectangle(xCenter-width/2,yCenter-height/2,width,height);
+        this.sheild = shield;
+        this.boundingBox = new Rectangle( xCenter - width/2,yCenter - height/2,width,height);
         this.laser_width = laser_width;
         this.laser_height = laser_height;
         this.laser_speed = laser_speed;
+        this.time_Between_shots = time_Between_shots;
         this.shipTextureRegion = shipTextureRegion;
-        this.sheildTextureRegion = sheildTextureRegion;
+        this.shieldTextureRegion = shieldTextureRegion;
         this.laserTextureRegion = laserTextureRegion;
     }
-    public void update(float deltaTime){
-        time_since_lastshot +=deltaTime;
-    }
 
-    public boolean canfire()
+
+    //updating how long it's been since the last laser was fired
+    public void update(float deltaTime)
     {
-        boolean result=(time_since_lastshot-time_B_shots>=0);
-        return result;
-    }
-    public abstract Lasers[] firelaser();
-
-    public boolean intersects(Rectangle otherRectangle){
-         return boundingBox.overlaps(otherRectangle);
+          time_since_LastShot += deltaTime;
     }
 
-    public void hit(Lasers lasers){
-        if (sheild>0){
-            sheild--;
+
+    //checks if the ship able to fire or not by checking the time which passed since the last shot
+    public boolean canFireLaser()
+    {
+        return (time_since_LastShot - time_Between_shots >= 0);
+    }
+
+
+    public abstract Lasers[] fireLasers();
+
+
+    public void hit(Lasers laser)
+    {
+        if(sheild > 0)
+        {
+            sheild --;
         }
+    }
+
+    public boolean intersects(Rectangle otherRectangle)
+    {
+        return  boundingBox.overlaps(otherRectangle);
+    }
+
+
+    //responsible for moving
+    public void translate(float x,float y)
+    {
+        boundingBox.setPosition(boundingBox.x+x,boundingBox.y+y);
     }
 
     public void draw(Batch batch){
         batch.draw(shipTextureRegion,boundingBox.x,boundingBox.y,boundingBox.width,boundingBox.height);
         if (sheild > 0){
-            batch.draw(sheildTextureRegion,boundingBox.x,boundingBox.y,boundingBox.width,boundingBox.height);
+            batch.draw(shieldTextureRegion,boundingBox.x,boundingBox.y,boundingBox.width,boundingBox.height);
         }
     }
 }

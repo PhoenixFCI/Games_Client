@@ -8,21 +8,32 @@ class Lasers {
     //positon
     Rectangle boundingBox;
     float m_speed;
+
+    //position and dimension
+    float xPosition, yPosition;
+    float width, height;
+
     //graphics
     TextureRegion textureRegion;
 
-    public Lasers(float xCenter,float yBottom,float width
-                  ,float height,float m_speed,TextureRegion textureRegion) {
-
-        this.boundingBox=new Rectangle(xCenter-width/2,yBottom-height/2,width,height);
+    public Lasers(float xPosition, float yPosition, float width, float height,float m_speed,  TextureRegion textureRegion)
+    {
         this.m_speed = m_speed;
-        this.textureRegion =textureRegion;
+        this.boundingBox = new Rectangle(xPosition-width/2,yPosition,width,height);
+        this.textureRegion = textureRegion;
     }
-    public void translate(float xChange,float yChange){
+
+    public void translate(float xChange, float yChange){
         boundingBox.setPosition(boundingBox.x+xChange, boundingBox.y+yChange);
     }
 
-    public void draw(Batch batch){
+    public void draw(Batch batch)
+    {
         batch.draw(textureRegion,boundingBox.x,boundingBox.y,boundingBox.width,boundingBox.height);
     }
+
+   /* public Rectangle getBoundingBox()
+    {
+        return boundingBox;
+    }*/
 }
