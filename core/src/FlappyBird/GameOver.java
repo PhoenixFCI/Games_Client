@@ -83,6 +83,7 @@ public class GameOver implements Screen
             public void clicked(InputEvent event, float x, float y)
             {
 
+
                 Gdx.app.exit();
 
              }
