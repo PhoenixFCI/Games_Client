@@ -86,6 +86,7 @@ public class GameOver implements Screen
 
                 Gdx.app.exit();
 
+
              }
         });
 
