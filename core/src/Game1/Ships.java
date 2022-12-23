@@ -8,9 +8,9 @@ abstract class Ships
 {
     // attributes(characteristics)
     float m_speed;
-    int sheild;
+    int Shield;
 
-    //positon
+    //position
     Rectangle boundingBox;
 
     //laser info
@@ -28,7 +28,7 @@ abstract class Ships
                   TextureRegion shieldTextureRegion, TextureRegion laserTextureRegion)
     {
         this.m_speed = m_speed;
-        this.sheild = shield;
+        this.Shield = shield;
         this.boundingBox = new Rectangle( xCenter - width/2,yCenter - height/2,width,height);
         this.laser_width = laser_width;
         this.laser_height = laser_height;
@@ -59,12 +59,14 @@ abstract class Ships
 
     public void hit(Lasers laser)
     {
-        if(sheild > 0)
+        if(Shield > 0)
         {
-            sheild --;
+            Shield--;
         }
     }
 
+
+    //checking if 2 Sprites (bullet and enemy for example) hits each other
     public boolean intersects(Rectangle otherRectangle)
     {
         return  boundingBox.overlaps(otherRectangle);
@@ -74,12 +76,12 @@ abstract class Ships
     //responsible for moving
     public void translate(float x,float y)
     {
-        boundingBox.setPosition(boundingBox.x+x,boundingBox.y+y);
+        boundingBox.setPosition(boundingBox.x + x,boundingBox.y+y);
     }
 
     public void draw(Batch batch){
         batch.draw(shipTextureRegion,boundingBox.x,boundingBox.y,boundingBox.width,boundingBox.height);
-        if (sheild > 0){
+        if (Shield > 0){
             batch.draw(shieldTextureRegion,boundingBox.x,boundingBox.y,boundingBox.width,boundingBox.height);
         }
     }

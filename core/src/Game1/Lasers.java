@@ -9,10 +9,6 @@ class Lasers {
     Rectangle boundingBox;
     float m_speed;
 
-    //position and dimension
-    float xPosition, yPosition;
-    float width, height;
-
     //graphics
     TextureRegion textureRegion;
 
@@ -23,16 +19,16 @@ class Lasers {
         this.textureRegion = textureRegion;
     }
 
-    public void translate(float xChange, float yChange){
+    /*public void translate(float xChange, float yChange){
         boundingBox.setPosition(boundingBox.x+xChange, boundingBox.y+yChange);
-    }
+    }*/
 
     public void draw(Batch batch)
     {
         batch.draw(textureRegion,boundingBox.x,boundingBox.y,boundingBox.width,boundingBox.height);
     }
 
-   /* public Rectangle getBoundingBox()
+    /*public Rectangle getBoundingBox()
     {
         return boundingBox;
     }*/

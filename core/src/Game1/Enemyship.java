@@ -4,9 +4,6 @@ package Game1;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
-import com.phoenix.MultipleScreen;
-import org.graalvm.compiler.nodes.java.RawMonitorEnterNode;
-
 import java.util.Random;
 
 class EnemyShip extends Ships{
@@ -60,12 +57,12 @@ class EnemyShip extends Ships{
     @Override
     public Lasers[] fireLasers()
     {
-        Lasers [] laser = new Lasers[2];
-        laser[0] = new Lasers(boundingBox.x+(boundingBox.width*0.18f),boundingBox.y -laser_height,
+        Lasers [] laser = new Lasers[1];
+        laser[0] = new Lasers(boundingBox.x+(boundingBox.width*0.5f),boundingBox.y -laser_height,
                 laser_width,laser_height,laser_speed,laserTextureRegion);
 
-        laser[1] = new Lasers(boundingBox.x+(boundingBox.width*0.82f),boundingBox.y -laser_height,
-                laser_width,laser_height,laser_speed,laserTextureRegion);
+        /*laser[1] = new Lasers(boundingBox.x+(boundingBox.width*0.82f),boundingBox.y -laser_height,
+                laser_width,laser_height,laser_speed,laserTextureRegion);*/
 
         time_since_LastShot = 0;
 
@@ -75,7 +72,7 @@ class EnemyShip extends Ships{
     @Override
     public void draw(Batch batch){
         batch.draw(shipTextureRegion,boundingBox.x,boundingBox.y,boundingBox.width,boundingBox.height);
-        if (sheild > 0){
+        if (Shield > 0){
             batch.draw(shieldTextureRegion,boundingBox.x,boundingBox.y-boundingBox.height*0.18f,boundingBox.width,boundingBox.height);
         }
     }

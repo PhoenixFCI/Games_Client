@@ -4,7 +4,6 @@ import Game1.MainScreen;
 import FlappyBird.GameScreen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-//import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -16,10 +15,6 @@ import com.badlogic.gdx.*;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-//import com.badlogic.gdx.video.VideoPlayer;
-//import com.badlogic.gdx.video.VideoPlayerCreator;
-//import java.io.FileNotFoundException;
-
 
 public class Client implements Screen
 {
