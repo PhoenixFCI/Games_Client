@@ -3,8 +3,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -13,11 +11,16 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.*;
 import com.phoenix.MultipleScreen;
+
 import java.util.Random;
+import java.util.Vector;
 
 
 public class GameScreen  implements Screen {
     MultipleScreen game;
+
+    int width_window = (int) ((Gdx.graphics.getDisplayMode().width)*(55.0/100.0));  //Ratio of width @Kareem
+    int height_window = (int) ((Gdx.graphics.getDisplayMode().height)*(75.0/100.0)); //Ratio of height @Kareem
     public enum State
     {
         //STOPPED
@@ -33,7 +36,7 @@ public class GameScreen  implements Screen {
     //graphics
     private Texture backgroundTexture;
     private SpriteBatch batch;
-    private Player player;
+    private Objects player;
     private Texture playerRunTexture,enemyTexture;
     //private Motions animation;
 
@@ -57,8 +60,6 @@ public class GameScreen  implements Screen {
     private final Array<Enemies> enemies = new Array<>();
     private final int distance=150;
     private Random rand;
-    private Sound jumpSound;
-    private Music backMusic;
 
     @Override
     public void show()
@@ -72,17 +73,13 @@ public class GameScreen  implements Screen {
         backgroundTexture = new Texture("Robot/background2.jpg");
         playerRunTexture =new Texture("Robot/Run.png");
         enemyTexture=new Texture("Robot/pxArt.png");
-        player=new Player(playerRunTexture, playerRunTexture.getWidth()*0.95f, playerRunTexture.getHeight(),40,3);
+        player=new Objects(playerRunTexture, playerRunTexture.getWidth()*0.95f, playerRunTexture.getHeight(),40,3);
         //Score font
         String fontPath = "Flappy Bird Game/joystix.monospace-regular.ttf";
         scoreFont=new GameFont(fontPath,25, Color.WHITE,Color.BLACK,1);
         rand=new Random();
 
         //nothing
-        jumpSound= Gdx.audio.newSound(Gdx.files.internal("Robot/Jump.ogg"));
-        backMusic=Gdx.audio.newMusic(Gdx.files.internal("Robot/Dexters Laboratory.mp3"));
-        backMusic.setLooping(true);
-        backMusic.setVolume(0.5f);
 
     }
 
@@ -90,19 +87,29 @@ public class GameScreen  implements Screen {
     @Override
     public void render(float delta)
     {
+        if(Gdx.input.isKeyJustPressed(Input.Keys.RIGHT))
+        {
+            Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
+        }
+
+        if(Gdx.input.isKeyJustPressed(Input.Keys.LEFT))
+        {
+            Gdx.graphics.setWindowedMode(width_window,height_window);
+        }
+
         switch (state)
         {
             case RUN:
                 BackgroundMove++;
                 BackgroundMove=BackgroundMove%WorldWidth;
-                backMusic.play();
                 player.update(delta);
                 if(Gdx.input.isKeyPressed(Input.Keys.ESCAPE))
                     pause();
 
-                if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)&&player.getPosition().y<=5){
+
+                if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)&&player.getPosition().y==0)
+                {
                     player.jump();
-                    jumpSound.play();
                 }
 
                 System.out.println(enemies.size);;
@@ -111,11 +118,10 @@ public class GameScreen  implements Screen {
                     spawnEnemies();
                     EnemyDil();
                     addScore();
-                    if(collision()) {
-                        backMusic.stop();
-                        jumpSound.stop();
-                        game.changeScreen(new GameOver(game));
-                    }
+                    if(collision())
+                        pause();
+
+
                 batch.begin();
                 drawBackground();
                 player.draw(batch);
@@ -144,7 +150,6 @@ public class GameScreen  implements Screen {
     @Override
     public void resize(int width, int height) {
         viewport.update(width,height);
-
     }
 
     @Override
@@ -171,7 +176,6 @@ public class GameScreen  implements Screen {
         enemyTexture.dispose();
         playerRunTexture.dispose();
         Enemies.dispose();
-        scoreFont.dispose();
     }
 
     public int highScore(int currentScore){
@@ -184,7 +188,6 @@ public class GameScreen  implements Screen {
 
     public void newEnemies(){
         Enemies enemy = new Enemies( WorldWidth +rand.nextInt(500));
-
         enemies.add(enemy);
     }
 
