@@ -1,6 +1,5 @@
 package FlappyBird;
 
-import Game1.test;
 import com.badlogic.gdx.Gdx;
 
 import com.badlogic.gdx.Screen;
