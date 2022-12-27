@@ -2,6 +2,7 @@ package com.phoenix;
 
 import Game1.MainScreen;
 import FlappyBird.GameScreen;
+import Game1.MenuScreen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -27,12 +28,16 @@ public class Client implements Screen
 	//private VideoPlayer videoPlayer;
 	Animation<TextureRegion> animation;
 	float elapsed;
-	private final Skin mySkin;
+	private Skin mySkin;
 
 	public Client(MultipleScreen x)
 	{
 		multi = x;
+	}
 
+	@Override
+	public void show()
+	{
 		stage = new Stage(new ScreenViewport());
 		Gdx.input.setInputProcessor(stage);
 		mySkin = new Skin(Gdx.files.internal("Skin/glassyui/glassy-ui.json"));
@@ -58,7 +63,7 @@ public class Client implements Screen
 			@Override
 			public void clicked(InputEvent event, float x, float y)
 			{
-				multi.changeScreen( new MainScreen(multi));
+				multi.changeScreen( new MenuScreen(multi));
 			}
 
 			@Override
@@ -94,16 +99,6 @@ public class Client implements Screen
 
 		stage.addActor(button1);
 		stage.addActor(button2);
-	}
-
-	@Override
-	public void show()
-	{
-		/*try {
-			videoPlayer.play(Gdx.files.internal("Preview/flappy.webm"));
-		} catch (FileNotFoundException e) {
-			Gdx.app.error("gdx-video", "Oh no!");
-		}*/
 	}
 
 	@Override

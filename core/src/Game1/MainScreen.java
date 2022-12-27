@@ -56,7 +56,11 @@ public class MainScreen implements Screen
     public MainScreen(MultipleScreen multi)
     {
         this.multi = multi;
+    }
 
+    @Override
+    public void show()
+    {
         //Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
 
         //a camera for 2d perspective
@@ -96,11 +100,6 @@ public class MainScreen implements Screen
         enemyLaserList = new LinkedList<>();
 
         batch = new SpriteBatch();
-    }
-
-    @Override
-    public void show() {
-
     }
 
     @Override
