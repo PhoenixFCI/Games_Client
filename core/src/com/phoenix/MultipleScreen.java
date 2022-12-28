@@ -5,19 +5,22 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 
+
 public class MultipleScreen extends Game
 {
+
     @Override
     public void create()
     {
         changeScreen(new Client(this));
     }
+
     public void changeScreen(Screen newScreen){
         Screen oldScreen = getScreen();
         setScreen(newScreen);
         //Dispose the old screen to release resources
-//        if(oldScreen != null)
-//            oldScreen.dispose();
+        if(oldScreen != null)
+            oldScreen.dispose();
     }
 
     @Override
