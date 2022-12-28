@@ -32,7 +32,7 @@ public class Client implements Screen
 
 	private SpriteBatch batch;
 	//private VideoPlayer videoPlayer;
-	Animation<TextureRegion> animation;
+	Animation<TextureRegion> animation,animation2;
 	float elapsed;
 	private Skin mySkin;
 
@@ -50,6 +50,7 @@ public class Client implements Screen
 
 		batch = new SpriteBatch();
 		animation = GifDecoder.loadGIFAnimation(Animation.PlayMode.LOOP, Gdx.files.internal("Preview/flappy.gif").read());
+		animation2 = GifDecoder.loadGIFAnimation(Animation.PlayMode.LOOP, Gdx.files.internal("Preview/Space Invader.gif").read());
 		//videoPlayer = VideoPlayerCreator.createVideoPlayer();
 
 		Back = new Texture("Client/Icon.png");
@@ -149,8 +150,8 @@ public class Client implements Screen
 
 		batch.begin();
 		//batch.draw(Back,(Gdx.graphics.getWidth()/2) - (Back.getWidth()),Gdx.graphics.getHeight()/2 - (Back.getHeight()),Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
-		batch.draw(animation.getKeyFrame(elapsed), Gdx.graphics.getWidth()-(Gdx.graphics.getWidth() / 12)*5 , Gdx.graphics.getHeight()-450,button2.getWidth(), button2.getHeight() * 4);
-
+		batch.draw(animation.getKeyFrame(elapsed), button2.getX(), button2.getY() + button2.getHeight() * 2,button2.getWidth(), button2.getHeight() * 4);
+		batch.draw(animation2.getKeyFrame(elapsed), button1.getX(), button1.getY() + button1.getHeight() * 2,button1.getWidth(), button1.getHeight() * 4);
 		//Texture frame = videoPlayer.getTexture();
 		/*if (frame != null)
 			batch.draw(frame,Gdx.graphics.getWidth()-(Gdx.graphics.getWidth() / 12)*5 , 400, button2.getWidth(), 300);*/
