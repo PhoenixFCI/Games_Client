@@ -14,6 +14,13 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.phoenix.MultipleScreen;
@@ -26,6 +33,16 @@ import java.util.Random;
 
 public class MainScreen implements Screen
 {
+
+    public enum State
+    {
+        PAUSE,
+        RUN,
+    }
+
+    int temp; //used to store backgrounds index
+
+    private State state = State.RUN;
     MultipleScreen multi;
 
     boolean once = false;
@@ -45,6 +62,12 @@ public class MainScreen implements Screen
     private Camera camera;
     private Viewport viewport;
 
+
+    //pause menu
+    Label labelStart,labelExit;
+    Skin mySkin;
+    Stage stage;
+    boolean pauseOnce = false;
 
     //Graphics
     private SpriteBatch batch;
@@ -83,6 +106,10 @@ public class MainScreen implements Screen
     @Override
     public void show()
     {
+        stage = new Stage(new ScreenViewport());
+        Gdx.input.setInputProcessor(stage);
+        mySkin = new Skin(Gdx.files.internal("Skin/glassyui/glassy-ui.json"));
+
         //Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
 
         //a camera for 2d perspective
@@ -140,47 +167,71 @@ public class MainScreen implements Screen
     @Override
     public void render(float delta)
     {
-        if(playership.lives > 0) {
-            batch.begin();
-
-            renderBackground(delta);
-
-            inputs(delta);
-            playership.update(delta);
-            spawnEnemy(delta);
-
-            ListIterator<EnemyShip> enemyiterator = enemyshipsList.listIterator();
-            while (enemyiterator.hasNext()) {
-                EnemyShip enemyship = enemyiterator.next();
-                moveEnemies(enemyship, delta);
-                enemyship.update(delta);
-
-                //Enemy ships
-                enemyship.draw(batch);
-            }
-
-
-            //lasers
-            renderLasers(delta);
-
-            //player ships
-            playership.draw(batch);
-
-
-            //Collision
-            Collisions();
-
-            //explosions
-            renderExplosions(delta);
-
-            //draw Score
-            drawScore();
-
-            batch.end();
-        }
-        else
+        switch (state)
         {
-            multi.changeScreen(new EndScreen(multi));
+            case RUN:
+
+                if(Gdx.input.isKeyPressed(Input.Keys.ESCAPE))
+                {
+                    pauseOnce = true;
+                    stage.clear();
+                    state = State.PAUSE;
+                }
+
+                if (playership.lives > 0) {
+                    batch.begin();
+
+                    renderBackground(delta);
+
+                    inputs(delta);
+                    playership.update(delta);
+                    spawnEnemy(delta);
+
+                    ListIterator<EnemyShip> enemyiterator = enemyshipsList.listIterator();
+                    while (enemyiterator.hasNext()) {
+                        EnemyShip enemyship = enemyiterator.next();
+                        moveEnemies(enemyship, delta);
+                        enemyship.update(delta);
+
+                        //Enemy ships
+                        enemyship.draw(batch);
+                    }
+
+
+                    //lasers
+                    renderLasers(delta);
+
+                    //player ships
+                    playership.draw(batch);
+
+
+                    //Collision
+                    Collisions();
+
+                    //explosions
+                    renderExplosions(delta);
+
+                    //draw Score
+                    drawScore();
+
+                    batch.end();
+                }
+                else
+                {
+                    multi.changeScreen(new EndScreen(multi));
+                }
+                break;
+
+
+            case PAUSE:
+                pause();
+                if(pauseOnce)
+                {
+                    pauseMenu();
+                }
+                stage.act(delta);
+                stage.draw();;
+                break;
         }
     }
 
@@ -256,6 +307,7 @@ public class MainScreen implements Screen
 
             batch.draw(backgrounds[i],0,-backgroundOffsets[i],World_width,World_height);
             batch.draw(backgrounds[i],0,-backgroundOffsets[i]+World_height,World_width,World_height);
+            temp = i;
         }
     }
 
@@ -392,7 +444,7 @@ public class MainScreen implements Screen
     {
         float leftlimit, rightlimit, uplimit, downlimit;
         leftlimit = -enemyship.boundingBox.x;
-        downlimit = (float)(World_height/2) -enemyship.boundingBox.y - enemyship.boundingBox.height;
+        downlimit = (float)(World_height - (World_height*0.35f)) -enemyship.boundingBox.y - enemyship.boundingBox.height;
 
         rightlimit = World_width - enemyship.boundingBox.x - enemyship.boundingBox.width;
         uplimit =  World_height - enemyship.boundingBox.y - enemyship.boundingBox.height;
@@ -468,6 +520,62 @@ public class MainScreen implements Screen
 
 
 
+    public void pauseMenu()
+    {
+        labelStart = new com.badlogic.gdx.scenes.scene2d.ui.Label("Resume",mySkin);
+        labelStart.setSize(labelStart.getWidth()*3,labelStart.getHeight()*3);
+        labelStart.setFontScale(3,3);
+        labelStart.setPosition((Gdx.graphics.getWidth()/2) - labelStart.getWidth()/2, Gdx.graphics.getHeight()/2);
+
+        labelExit = new Label("Exit",mySkin);
+        labelExit.setSize(labelExit.getWidth() * 3,labelExit.getHeight() * 3);
+        labelExit.setPosition(labelStart.getX() + (labelExit.getWidth() * 0.6f),labelStart.getY() - (labelStart.getY() * 0.35f));
+        labelExit.setFontScale(3,3);
+
+        labelStart.addListener(new ClickListener()
+        {
+            @Override
+            public void clicked(InputEvent event, float x, float y)
+            {
+                state = State.RUN;
+            }
+
+            @Override
+            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                labelStart.setColor(Color.RED);
+            }
+
+            @Override
+            public void exit(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                labelStart.setColor(Color.WHITE);
+            }
+        });
+
+
+        labelExit.addListener(new ClickListener()
+        {
+            @Override
+            public void clicked(InputEvent event, float x, float y)
+            {
+                Gdx.app.exit();
+            }
+
+            @Override
+            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                labelExit.setColor(Color.RED);
+            }
+
+            @Override
+            public void exit(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                labelExit.setColor(Color.WHITE);
+            }
+        });
+
+        stage.addActor(labelStart);
+        stage.addActor(labelExit);
+        pauseOnce = false;
+    }
+
 
     @Override
     public void resize(int width, int height)
@@ -477,9 +585,37 @@ public class MainScreen implements Screen
     }
 
     @Override
-    public void pause() {
+    public void pause()
+    {
+        batch.begin();
 
+        renderBackground(0);
+
+        ListIterator<EnemyShip> enemyiterator = enemyshipsList.listIterator();
+        while (enemyiterator.hasNext())
+        {
+            EnemyShip enemyship = enemyiterator.next();
+            //Enemy ships
+            enemyship.draw(batch);
+        }
+
+
+        //lasers
+        renderLasers(0);
+
+        //player ships
+        playership.draw(batch);
+
+
+        //explosions
+        renderExplosions(0);
+
+        //draw Score
+        drawScore();
+
+        batch.end();
     }
+
 
     @Override
     public void resume() {
@@ -497,5 +633,6 @@ public class MainScreen implements Screen
         batch.dispose();
         textureAtlas.dispose();
         explosion.dispose();
+        stage.dispose();
     }
 }
