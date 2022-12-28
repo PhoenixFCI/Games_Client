@@ -28,7 +28,7 @@ public class GameScreen  implements Screen {
     }
 
     private Preferences prefs = Gdx.app.getPreferences("game score");
-    private State state = State.RUN;
+    public static State state = State.RUN;
 
     //graphics
     private Texture backgroundTexture;
@@ -44,21 +44,26 @@ public class GameScreen  implements Screen {
     private final float WorldWidth= Gdx.graphics.getWidth();
     private final float WorldHeight=Gdx.graphics.getHeight();
 
-    //font
-    GameFont scoreFont;
-    public GameScreen(MultipleScreen screen){
-     game =screen;
-    }
+    //font&score
+    private GameFont scoreFont;
+    private int  currentScore=0;
+    private int highScore=prefs.getInteger("highScore",0);
 
     private Viewport viewport;
     private Camera camera;
 
-    //nothing
+    //enemy attributes
     private final Array<Enemies> enemies = new Array<>();
     private final int distance=150;
     private Random rand;
+
+    //sounds
     private Sound jumpSound;
     private Music backMusic;
+
+    public GameScreen(MultipleScreen screen){
+        game =screen;
+    }
 
     @Override
     public void show()
@@ -86,7 +91,7 @@ public class GameScreen  implements Screen {
 
     }
 
-    int currentScore=0;
+
     @Override
     public void render(float delta)
     {
@@ -105,7 +110,12 @@ public class GameScreen  implements Screen {
                     jumpSound.play();
                 }
 
-                System.out.println(enemies.size);;
+                if(Gdx.input.isKeyPressed(Input.Keys.BACKSPACE)){
+                    prefs.putInteger("highScore", 0);
+                    prefs.flush();
+                }
+
+
                 //Enemies methods
                     updateEnemies();
                     spawnEnemies();
@@ -115,6 +125,7 @@ public class GameScreen  implements Screen {
                         backMusic.stop();
                         jumpSound.stop();
                         game.changeScreen(new GameOver(game));
+                        highScore(currentScore);
                     }
                 batch.begin();
                 drawBackground();
@@ -175,11 +186,11 @@ public class GameScreen  implements Screen {
     }
 
     public int highScore(int currentScore){
-        if (currentScore > prefs.getInteger("highscore")) {
-            prefs.putInteger("highscore", currentScore);
+        if (currentScore > highScore) {
+            prefs.putInteger("highScore", currentScore);
             prefs.flush();
         }
-        return prefs.getInteger("highscore");
+        return prefs.getInteger("highScore",0);
     }
 
     public void newEnemies(){
@@ -214,7 +225,7 @@ public class GameScreen  implements Screen {
 
     public void drawScore(){
         scoreFont.draw(batch,"Score: "+currentScore,5,WorldHeight-scoreFont.textHeight());
-        scoreFont.draw(batch,"High Score: "+prefs.getInteger("highscore"),WorldWidth-scoreFont.textWidth()*2,WorldHeight-scoreFont.textHeight());
+        scoreFont.draw(batch,"High Score: "+prefs.getInteger("highScore"),WorldWidth-scoreFont.textWidth()*2,WorldHeight-scoreFont.textHeight());
     }
     public void addScore(){
         for (int i = 0; i < enemies.size; i++) {
@@ -224,7 +235,6 @@ public class GameScreen  implements Screen {
 
             if (40==temp)
                 currentScore++;
-            highScore(currentScore);
         }
     }
     public void drawBackground(){
