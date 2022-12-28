@@ -102,9 +102,11 @@ public class GameScreen  implements Screen {
                 BackgroundMove=BackgroundMove%WorldWidth;
                 backMusic.play();
                 player.update(delta);
-                if(Gdx.input.isKeyPressed(Input.Keys.ESCAPE))
+                if(Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
                     pause();
-
+                    backMusic.pause();
+                    jumpSound.pause();
+                }
                 if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)&&player.getPosition().y<=5){
                     player.jump();
                     jumpSound.play();

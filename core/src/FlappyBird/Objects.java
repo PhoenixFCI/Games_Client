@@ -3,6 +3,7 @@ package FlappyBird;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
 public class Objects {
@@ -11,8 +12,7 @@ public class Objects {
 
     //dimensions&positions
     private float width,height ;
-    private Vector3 position= new Vector3(20,300,0) , velocity= new Vector3(0,0,0);
-    private static final int Gravity = -15;
+    protected Vector2 position= new Vector2(20,300) ;
     public Objects(Texture texture, float width, float height, float xPos, float yPos) {
         this.texture = texture;
         this.width = width;
@@ -20,7 +20,6 @@ public class Objects {
         this.position.x = xPos;
         this.position.y = yPos;
     }
-    public  Objects(){}
     //collision Detection
     public boolean intersects(Rectangle otherObject){
         Rectangle thisObject=new Rectangle(position.x,position.y,width,height);
@@ -33,33 +32,14 @@ public class Objects {
         batch.draw(texture,position.x,position.y,width,height);
     }
 
-    public Vector3 getPosition() {
+    public Vector2 getPosition() {
         return position;
     }
 
-    public void move(int x, float y){
-        position.add(x,y,0);
-    }
-    public void update(float dt){
-        if(position.y<0)
-        velocity.add(0,Gravity,0);
-
-    velocity.scl(dt);
-    position.add(0,velocity.y,0);
-    velocity.scl(1/dt);
-    if(position.y<0){
-        position.y=0;
-    }
-        System.out.println("Update is working");
-    }
-    public  void jump(){
-        velocity.y = 300;
-
-    }
 
 
 
-    public void move(){}
+
 
     public Texture getTexture() {
         return texture;
