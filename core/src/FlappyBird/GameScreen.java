@@ -79,7 +79,7 @@ public class GameScreen  implements Screen {
         enemyTexture=new Texture("Robot/pxArt.png");
         player=new Player(playerRunTexture, playerRunTexture.getWidth()*0.95f, playerRunTexture.getHeight(),40,3);
         //Score font
-        String fontPath = "Flappy Bird Game/joystix.monospace-regular.ttf";
+        String fontPath = "Robot/joystix.monospace-regular.ttf";
         scoreFont=new GameFont(fontPath,25, Color.WHITE,Color.BLACK,1);
         rand=new Random();
 
@@ -117,25 +117,24 @@ public class GameScreen  implements Screen {
 
 
                 //Enemies methods
-                    updateEnemies();
-                    spawnEnemies();
-                    EnemyDil();
-                    addScore();
-                    if(collision()) {
-                        backMusic.stop();
-                        jumpSound.stop();
-                        game.changeScreen(new GameOver(game));
-                        highScore(currentScore);
-                    }
+                updateEnemies();
+                spawnEnemies();
+                EnemyDil();
+                addScore();
                 batch.begin();
                 drawBackground();
                 player.draw(batch);
                 drawEnemies();
                 drawScore();
                 batch.end();
+                if(collision())
+                {
+                    game.changeScreen(new GameOver(game));
+                }
                 break;
 
             case PAUSE:
+
                 if(Gdx.input.isKeyPressed(Input.Keys.SPACE))
                 {
                    resume();
@@ -176,13 +175,15 @@ public class GameScreen  implements Screen {
     }
 
     @Override
-    public void dispose() {
+    public void dispose()
+    {
         backgroundTexture.dispose();
-        batch.dispose();
         enemyTexture.dispose();
         playerRunTexture.dispose();
-        Enemies.dispose();
         scoreFont.dispose();
+        jumpSound.dispose();
+        backMusic.dispose();
+        batch.dispose();
     }
 
     public int highScore(int currentScore){
@@ -252,6 +253,4 @@ public class GameScreen  implements Screen {
             enemies.get(i).enemyUpdate(4);
         }
     }
-
-
 }

@@ -19,8 +19,8 @@ public class MultipleScreen extends Game
         Screen oldScreen = getScreen();
         setScreen(newScreen);
         //Dispose the old screen to release resources
-//        if(oldScreen != null)
-//            oldScreen.dispose();
+        if(oldScreen != null)
+            oldScreen.dispose();
     }
 
     @Override
