@@ -32,32 +32,8 @@ public class Objects {
     public void draw(SpriteBatch batch){
         batch.draw(texture,position.x,position.y,size.x,size.y);
     }
-
     public Vector2 getPosition() {
         return position;
     }
 
-    public void move(int x, float y){
-        position.add(x,y);
-    }
-    public void update(float dt)
-    {
-        if(position.y>0)
-            velocity.add(0,Gravity);
-
-        velocity.scl(dt);
-        position.add(0,velocity.y);
-        velocity.scl(1/dt);
-
-        if(position.y<0)
-            position.y=0;
-
-    }
-    public  void jump(){
-        velocity.y = 700;
-    }
-
-    public void setTexture(Texture texture){
-        this.texture=texture;
-    }
 }
