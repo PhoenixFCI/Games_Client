@@ -1,16 +1,24 @@
 package Game1;
 
+import FlappyBird.GameFont;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.phoenix.MultipleScreen;
+
+import java.awt.*;
 import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.Random;
@@ -20,8 +28,16 @@ public class MainScreen implements Screen
 {
     MultipleScreen multi;
 
+    boolean once = false;
+    //Score
+    GameFont ScoreFont;
+    private Preferences prefs = Gdx.app.getPreferences("Space Invader");
+    int score = 0;
+
     //Controlling the num of enemies which appear in the screen
     int MaxEnemyNum = 3, EnemyCounter = 1;
+
+    //used in random positioning the enemy
     Random random = new Random();
 
 
@@ -32,6 +48,7 @@ public class MainScreen implements Screen
 
     //Graphics
     private SpriteBatch batch;
+    private Texture explosion;
     private TextureAtlas textureAtlas;
     private TextureRegion[] backgrounds;
     private  TextureRegion playerShipTexture, playerShield, enemyShipTexture, enemyShield, playerLaser, enemyLaser;
@@ -51,6 +68,11 @@ public class MainScreen implements Screen
     private LinkedList<EnemyShip> enemyshipsList;
 
     private LinkedList<Lasers> playerLaserList, enemyLaserList;
+    private LinkedList<Explosion> explosionList;
+
+
+    //Sounds
+    private Sound laserSound,ShieldDownSound,ShieldUpSound;
 
 
     public MainScreen(MultipleScreen multi)
@@ -67,9 +89,11 @@ public class MainScreen implements Screen
         camera = new OrthographicCamera();
         viewport = new StretchViewport(World_width,World_height,camera);
 
+        //Explosion texture
+        explosion = new Texture("Space Invader/Explosion.png");
+
         //set up the texture atlas
         textureAtlas = new TextureAtlas("Space Invader/Atlas/Images2.atlas");
-
 
         //set up the BackGrounds
         backgrounds = new TextureRegion[4];
@@ -92,60 +116,92 @@ public class MainScreen implements Screen
         playerLaser = textureAtlas.findRegion("laserBlue05");
 
         //set up game objects
-        playership = new PlayerShip(400,10,90,90,World_width/2,World_height/4,
+        playership = new PlayerShip(400,5,90,90,World_width/2,World_height/4,
                 4,23,450,0.6f,playerShipTexture,playerShield,playerLaser);
         enemyshipsList = new LinkedList<>();
 
         playerLaserList = new LinkedList<>();
         enemyLaserList = new LinkedList<>();
+        explosionList = new LinkedList<>();
 
         batch = new SpriteBatch();
+
+        //Font
+        String fontPath = "Robot/joystix.monospace-regular.ttf";
+        ScoreFont=new GameFont(fontPath,25, com.badlogic.gdx.graphics.Color.WHITE, Color.BLACK,1);
+
+
+        //Sounds
+        ShieldUpSound = Gdx.audio.newSound(Gdx.files.internal("Space Invader/Audio/sfx_shieldUp.ogg"));
+        ShieldDownSound = Gdx.audio.newSound(Gdx.files.internal("Space Invader/Audio/sfx_shieldDown.ogg"));
+        laserSound = Gdx.audio.newSound(Gdx.files.internal("Space Invader/Audio/sfx_laser1.ogg"));
     }
 
     @Override
     public void render(float delta)
     {
-        batch.begin();
+        if(playership.lives > 0) {
+            batch.begin();
 
-        renderBackground(delta);
+            renderBackground(delta);
 
-        inputs(delta);
-        playership.update(delta);
-        spawnEnemy(delta);
+            inputs(delta);
+            playership.update(delta);
+            spawnEnemy(delta);
 
-        ListIterator<EnemyShip> enemyiterator = enemyshipsList.listIterator();
-        while(enemyiterator.hasNext())
-        {
-            EnemyShip enemyship = enemyiterator.next();
-            moveEnemies(enemyship,delta);
-            enemyship.update(delta);
+            ListIterator<EnemyShip> enemyiterator = enemyshipsList.listIterator();
+            while (enemyiterator.hasNext()) {
+                EnemyShip enemyship = enemyiterator.next();
+                moveEnemies(enemyship, delta);
+                enemyship.update(delta);
 
-            //Enemy ships
-            enemyship.draw(batch);
+                //Enemy ships
+                enemyship.draw(batch);
+            }
+
+
+            //lasers
+            renderLasers(delta);
+
+            //player ships
+            playership.draw(batch);
+
+
+            //Collision
+            Collisions();
+
+            //explosions
+            renderExplosions(delta);
+
+            //draw Score
+            drawScore();
+
+            batch.end();
         }
-
-
-        //lasers
-        renderLasers(delta);
-
-        //player ships
-        playership.draw(batch);
-
-
-
-        //Collision
-        Collisions();
-
-        batch.end();
+        else
+        {
+            multi.changeScreen(new EndScreen(multi));
+        }
     }
 
+    public void drawScore()
+    {
+        //updating highScore
+        if (score > prefs.getInteger("highscore")) {
+            prefs.putInteger("highscore", score);
+            prefs.flush();
+        }
+        ScoreFont.draw(batch,"Score: "+score,5,World_height-ScoreFont.textHeight());
+        ScoreFont.draw(batch,"Lives: "+playership.lives,(World_width/2) - (World_width * 0.15f),World_height-ScoreFont.textHeight());
+        ScoreFont.draw(batch,"High Score: "+prefs.getInteger("highscore"),World_width-ScoreFont.textWidth()*2,World_height-ScoreFont.textHeight());
+    }
 
     private void spawnEnemy(float delta)
     {
         enemySpawnTimer+=delta;
         if(enemySpawnTimer > timeBetweenEnemySpawn && MaxEnemyNum >= EnemyCounter )
         {
-            enemyshipsList.add(new EnemyShip(190, 5, 60, 60, random.nextFloat() *
+            enemyshipsList.add(new EnemyShip(190, 2, 60, 60, random.nextFloat() *
                     (World_width - 10), random.nextFloat() * (World_height - 5), 6, 25,
                     300, 0.8f, enemyShipTexture, enemyShield, enemyLaser));
 
@@ -156,6 +212,26 @@ public class MainScreen implements Screen
             EnemyCounter++;
         }
     }
+
+
+    private void renderExplosions(float delta)
+    {
+        ListIterator<Explosion> exploisionIter = explosionList.listIterator();
+        while(exploisionIter.hasNext())
+        {
+            Explosion explosion1 = exploisionIter.next();
+            explosion1.update(delta);
+            if(explosion1.isFinished())
+            {
+                exploisionIter.remove();
+            }
+            else
+            {
+                explosion1.draw(batch);
+            }
+        }
+    }
+
 
 
     //Scrolling background
@@ -191,6 +267,9 @@ public class MainScreen implements Screen
         {
             if(playership.canFireLaser())
             {
+                long id = laserSound.play(1.0f);
+                laserSound.setLooping(id,false);
+
                 Lasers[] lasers = playership.fireLasers();
                 for(Lasers laser : lasers)
                 {
@@ -258,7 +337,13 @@ public class MainScreen implements Screen
                 if(enemyship.intersects(laser.boundingBox))
                 {
                     //removing when hitting the enemy
-                    enemyship.hit(laser);
+                    if(enemyship.hit(laser))
+                    {
+                        temp.remove();
+                        explosionList.add(new Explosion(explosion,new Rectangle(enemyship.boundingBox),0.7f));
+                        EnemyCounter--;
+                        score++;
+                    }
                     iterator.remove();
                     break;
                 }
@@ -273,11 +358,31 @@ public class MainScreen implements Screen
             Lasers laser = iterator.next();
             if(playership.intersects(laser.boundingBox))
             {
+                if(playership.Shield == 1)
+                {
+                    long id = ShieldDownSound.play(1.0f);
+                    ShieldDownSound.setLooping(id,false);
+                }
                 //removing when hitting the player
-                playership.hit(laser);
+                if(playership.hit(laser))
+                {
+                    explosionList.add(new Explosion(explosion,new Rectangle(playership.boundingBox),1.4f));
+                    playership.lives--;
+                    playership.Shield = 5;
+                    once = true;
+                }
                 iterator.remove();
             }
         }
+
+
+        if(playership.Shield == 5 && once)
+        {
+            long id = ShieldUpSound.play(1.0f);
+            ShieldUpSound.setLooping(id,false);
+            once = false;
+        }
+
     }
 
 
@@ -390,5 +495,7 @@ public class MainScreen implements Screen
     public void dispose()
     {
         batch.dispose();
+        textureAtlas.dispose();
+        explosion.dispose();
     }
 }

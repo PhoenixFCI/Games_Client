@@ -1,7 +1,11 @@
 package com.phoenix;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
+import com.badlogic.gdx.files.FileHandle;
+
+import javax.swing.*;
 
 public class DesktopLauncher
 {
@@ -15,6 +19,7 @@ public class DesktopLauncher
 		int height = (int) ((Lwjgl3ApplicationConfiguration.getDisplayMode().height)*(75.0/100.0)); //Ratio of height @Kareem
 		config.setWindowedMode(width,height);
 		config.setTitle("Phoenix");
+		config.setWindowIcon("Client/Icon2.png");
 		new Lwjgl3Application(new MultipleScreen(), config);
 	}
 }

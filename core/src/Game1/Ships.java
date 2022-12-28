@@ -57,12 +57,14 @@ abstract class Ships
     public abstract Lasers[] fireLasers();
 
 
-    public void hit(Lasers laser)
+    public boolean hit(Lasers laser)
     {
         if(Shield > 0)
         {
             Shield--;
+            return false;
         }
+        return true;
     }
 
 

@@ -75,7 +75,7 @@ public class GameScreen  implements Screen {
         enemyTexture=new Texture("Robot/pxArt.png");
         player=new Objects(playerRunTexture, playerRunTexture.getWidth()*0.95f, playerRunTexture.getHeight(),40,3);
         //Score font
-        String fontPath = "Flappy Bird Game/joystix.monospace-regular.ttf";
+        String fontPath = "Robot/joystix.monospace-regular.ttf";
         scoreFont=new GameFont(fontPath,25, Color.WHITE,Color.BLACK,1);
         rand=new Random();
 

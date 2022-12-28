@@ -4,17 +4,21 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.phoenix.MultipleScreen;
+
+import java.awt.*;
 
 public class MenuScreen implements Screen
 {
@@ -29,8 +33,8 @@ public class MenuScreen implements Screen
     private final int World_width = Gdx.graphics.getWidth();
     private final int World_height = Gdx.graphics.getHeight();
 
-    private TextButton buttonStart;
-    private TextButton buttonExit;
+    private Label labelStart;
+    private Label labelExit;
 
     private Skin mySkin;
     private Music music;
@@ -65,20 +69,17 @@ public class MenuScreen implements Screen
         music.play();
 
 
-        int row_height = Gdx.graphics.getHeight() / 12;
-        int col_width = Gdx.graphics.getWidth() / 12;
+        labelStart = new Label("Start",mySkin);
+        labelStart.setSize(labelStart.getWidth()*3,labelStart.getHeight()*3);
+        labelStart.setFontScale(3,3);
+        labelStart.setPosition((Gdx.graphics.getWidth()/2) - labelStart.getWidth()/2, Gdx.graphics.getHeight()/2);
 
-        buttonStart = new TextButton("Start",mySkin,"small");
-        buttonStart.setSize(col_width*4,row_height);
-        buttonStart.setPosition((Gdx.graphics.getWidth()/2) - buttonStart.getWidth() / 2, Gdx.graphics.getHeight()/2);
-        buttonStart.getLabel().setFontScale(2,2);
+        labelExit = new Label("Exit",mySkin);
+        labelExit.setSize(labelExit.getWidth() * 3,labelExit.getHeight() * 3);
+        labelExit.setPosition(labelStart.getX() + (labelExit.getWidth() * 0.2f),labelStart.getY() - (labelStart.getY() * 0.35f));
+        labelExit.setFontScale(3,3);
 
-        buttonExit = new TextButton("Exit",mySkin,"small");
-        buttonExit.setSize(col_width*4,row_height);
-        buttonExit.setPosition(buttonStart.getX(),buttonStart.getY() - (buttonStart.getY() * 0.3f));
-        buttonStart.getLabel().setFontScale(2,2);
-
-        buttonStart.addListener(new ClickListener()
+        labelStart.addListener(new ClickListener()
         {
             @Override
             public void clicked(InputEvent event, float x, float y)
@@ -88,17 +89,17 @@ public class MenuScreen implements Screen
 
             @Override
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-                buttonStart.getLabel().setColor(Color.RED);
+                labelStart.setColor(Color.RED);
             }
 
             @Override
             public void exit(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-                buttonStart.getLabel().setColor(Color.WHITE);
+                labelStart.setColor(Color.WHITE);
             }
         });
 
 
-        buttonExit.addListener(new ClickListener()
+        labelExit.addListener(new ClickListener()
         {
             @Override
             public void clicked(InputEvent event, float x, float y)
@@ -108,18 +109,18 @@ public class MenuScreen implements Screen
 
             @Override
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-                buttonExit.getLabel().setColor(Color.RED);
+                labelExit.setColor(Color.RED);
             }
 
             @Override
             public void exit(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-                buttonExit.getLabel().setColor(Color.WHITE);
+                labelExit.setColor(Color.WHITE);
             }
         });
 
 
-        stage.addActor(buttonStart);
-        stage.addActor(buttonExit);
+        stage.addActor(labelStart);
+        stage.addActor(labelExit);
     }
 
 
