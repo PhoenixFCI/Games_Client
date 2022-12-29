@@ -21,28 +21,22 @@ public class GameFont {
         this.parameter.borderWidth=borderWidth;
         this.font=fontGenerator.generateFont(parameter);
     }
-    public GameFont(int size,Color color,Color borderColor,int borderWidth) {
-        this.fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("Flappy Bird Game/joystix.monospace-regular.ttf"));
-        this.parameter=new FreeTypeFontGenerator.FreeTypeFontParameter();
-        this.parameter.size=size;
-        this.parameter.color= color;
-        this.parameter.borderColor=borderColor;
-        this.parameter.borderWidth=borderWidth;
-        this.font=fontGenerator.generateFont(parameter);
-    }
-
     public void draw(SpriteBatch batch,String text,float x,float y){
         this.text.setText(font,text);
         font.draw(batch,text,x,y);
     }
+    public BitmapFont getFont(){
+        return this.font=fontGenerator.generateFont(parameter);
+    }
+
     public void dispose(){
         font.dispose();
         fontGenerator.dispose();
     }
-    public float textWidth(){
+    public float getTextwidth(){
         return this.text.width;
     }
-    public float textHeight(){
+    public float getTextheight(){
         return this.text.height;
     }
 

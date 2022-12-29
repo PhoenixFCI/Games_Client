@@ -31,18 +31,18 @@ public class GameScreen  implements Screen {
     public static State state = State.RUN;
 
     //graphics
-    private Texture backgroundTexture;
-    private SpriteBatch batch;
+    public static Texture backgroundTexture;
+    private static SpriteBatch batch;
     private Player player;
     private Texture playerRunTexture,enemyTexture;
     //private Motions animation;
 
     //timing
-    private float BackgroundMove;
+    public static float BackgroundMove;
 
     //World parameters
-    private final float WorldWidth= Gdx.graphics.getWidth();
-    private final float WorldHeight=Gdx.graphics.getHeight();
+    public static final float WorldWidth= Gdx.graphics.getWidth();
+    public static final float WorldHeight=Gdx.graphics.getHeight();
 
     //font&score
     private GameFont scoreFont;
@@ -55,6 +55,7 @@ public class GameScreen  implements Screen {
     //enemy attributes
     private final Array<Enemies> enemies = new Array<>();
     private final int distance=150;
+    private boolean clicked=false;
     private Random rand;
 
     //sounds
@@ -95,6 +96,7 @@ public class GameScreen  implements Screen {
     @Override
     public void render(float delta)
     {
+
         switch (state)
         {
             case RUN:
@@ -112,9 +114,10 @@ public class GameScreen  implements Screen {
                     jumpSound.play();
                 }
 
-                if(Gdx.input.isKeyPressed(Input.Keys.BACKSPACE)){
+                if(Gdx.input.isKeyPressed(Input.Keys.BACKSPACE)&&clicked==false){
                     prefs.putInteger("highScore", 0);
                     prefs.flush();
+                    clicked=true;
                 }
 
 
@@ -124,14 +127,14 @@ public class GameScreen  implements Screen {
                 EnemyDil();
                 addScore();
                 batch.begin();
-                drawBackground();
+                drawBackground(batch);
                 player.draw(batch);
                 drawEnemies();
                 drawScore();
                 batch.end();
-                if(collision())
-                {
+                if(collision()) {
                     game.changeScreen(new GameOver(game));
+                    highScore(currentScore);
                 }
                 break;
 
@@ -143,7 +146,7 @@ public class GameScreen  implements Screen {
                 }
                 camera.update();
                 batch.begin();
-                drawBackground();
+                drawBackground(batch);
                 player.draw(batch);
                 drawEnemies();
                 drawScore();
@@ -180,7 +183,7 @@ public class GameScreen  implements Screen {
     @Override
     public void dispose()
     {
-        backgroundTexture.dispose();
+        //backgroundTexture.dispose();
         enemyTexture.dispose();
         playerRunTexture.dispose();
         scoreFont.dispose();
@@ -199,7 +202,6 @@ public class GameScreen  implements Screen {
 
     public void newEnemies(){
         Enemies enemy = new Enemies( WorldWidth +rand.nextInt(500));
-
         enemies.add(enemy);
     }
 
@@ -228,8 +230,8 @@ public class GameScreen  implements Screen {
     }
 
     public void drawScore(){
-        scoreFont.draw(batch,"Score: "+currentScore,5,WorldHeight-scoreFont.textHeight());
-        scoreFont.draw(batch,"High Score: "+prefs.getInteger("highScore"),WorldWidth-scoreFont.textWidth()*2,WorldHeight-scoreFont.textHeight());
+        scoreFont.draw(batch,"Score: "+currentScore,5,WorldHeight-scoreFont.getTextheight());
+        scoreFont.draw(batch,"High Score: "+prefs.getInteger("highScore"),WorldWidth-scoreFont.getTextwidth()*2,WorldHeight-scoreFont.getTextheight());
     }
     public void addScore(){
         for (int i = 0; i < enemies.size; i++) {
@@ -241,7 +243,7 @@ public class GameScreen  implements Screen {
                 currentScore++;
         }
     }
-    public void drawBackground(){
+    public static void drawBackground(SpriteBatch batch){
         batch.draw(backgroundTexture,-BackgroundMove,0,WorldWidth,WorldHeight);
         batch.draw(backgroundTexture,-BackgroundMove+WorldWidth,0,WorldWidth,WorldHeight);
     }
