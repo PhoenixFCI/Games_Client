@@ -25,7 +25,6 @@ import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.phoenix.MultipleScreen;
 
-import java.awt.*;
 import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.Random;
@@ -49,7 +48,7 @@ public class MainScreen implements Screen
     //Score
     GameFont ScoreFont;
     private Preferences prefs = Gdx.app.getPreferences("Space Invader");
-    int score = 0;
+    public static int score = 0;
 
     //Controlling the num of enemies which appear in the screen
     int MaxEnemyNum = 3, EnemyCounter = 1;
@@ -242,9 +241,9 @@ public class MainScreen implements Screen
             prefs.putInteger("highscore", score);
             prefs.flush();
         }
-        ScoreFont.draw(batch,"Score: "+score,5,World_height-ScoreFont.textHeight());
-        ScoreFont.draw(batch,"Lives: "+playership.lives,(World_width/2) - (World_width * 0.15f),World_height-ScoreFont.textHeight());
-        ScoreFont.draw(batch,"High Score: "+prefs.getInteger("highscore"),World_width-ScoreFont.textWidth()*2,World_height-ScoreFont.textHeight());
+        ScoreFont.draw(batch,"Score: "+score,5,World_height-ScoreFont.getTextheight());
+        ScoreFont.draw(batch,"Lives: "+playership.lives,(World_width/2) - (World_width * 0.15f),World_height-ScoreFont.getTextheight());
+        ScoreFont.draw(batch,"High Score: "+prefs.getInteger("highscore"),World_width-ScoreFont.getTextwidth()*2,World_height-ScoreFont.getTextheight());
     }
 
     private void spawnEnemy(float delta)

@@ -5,7 +5,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -161,7 +160,8 @@ public class EndScreen implements Screen
         batch.begin();
 
         renderBackground(delta);
-        ScoreFont.draw(batch,"High Score: "+prefs.getInteger("highscore"),(World_width/2)-(ScoreFont.textWidth()/2),World_height-ScoreFont.textHeight());
+        ScoreFont.draw(batch,"High Score: "+prefs.getInteger("highscore"),(World_width/2)-(ScoreFont.getTextwidth()/2),World_height-ScoreFont.getTextheight());
+        ScoreFont.draw(batch,"Score: "+MainScreen.score,(World_width/4f)-(ScoreFont.getTextwidth()/2),World_height-ScoreFont.getTextheight());
 
         batch.end();
 

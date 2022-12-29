@@ -1,5 +1,6 @@
 package com.phoenix;
 
+import FlappyBird.StartScreen;
 import Game1.EndScreen;
 import Game1.MainScreen;
 import FlappyBird.GameScreen;
@@ -108,7 +109,7 @@ public class Client implements Screen
 			@Override
 			public void clicked(InputEvent event, float x, float y)
 			{
-				multi.changeScreen( new GameScreen(multi));
+				multi.changeScreen( new StartScreen(multi));
 			}
 
 			@Override

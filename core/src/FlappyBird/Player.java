@@ -11,19 +11,19 @@ public class Player extends Objects {
         super(texture, width, height, xPos, yPos);
     }
 
-    public void update(float dt)
+     void update(float dt)
     {
         if(position.y>0)
-            velocity.add(0,Gravity);
-        velocity.scl(dt);
+            velocity.add(0,Gravity);    // gravity
+      velocity.scl(dt);
         position.add(0.0f,velocity.y);
-        velocity.scl(1/dt);
+        velocity.scl(1/dt);          // anti gravity
         if(position.y<0){
             position.y=0;
         }
 
     }
-    public  void jump(){
+     void jump(){
         velocity.y = 700;
     }
 
