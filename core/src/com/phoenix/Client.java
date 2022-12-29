@@ -1,10 +1,7 @@
 package com.phoenix;
 
-import FlappyBird.StartScreen;
-import Game1.EndScreen;
-import Game1.MainScreen;
 import FlappyBird.GameScreen;
-import Game1.MenuScreen;
+import SpaceInvader.MenuScreen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -90,6 +87,8 @@ public class Client implements Screen
 			@Override
 			public void clicked(InputEvent event, float x, float y)
 			{
+				Gdx.graphics.setForegroundFPS(144);
+				//Gdx.graphics.setResizable(true);
 				multi.changeScreen( new MenuScreen(multi));
 			}
 
@@ -109,7 +108,8 @@ public class Client implements Screen
 			@Override
 			public void clicked(InputEvent event, float x, float y)
 			{
-				multi.changeScreen( new StartScreen(multi));
+				Gdx.graphics.setForegroundFPS(60);
+				multi.changeScreen( new GameScreen(multi));
 			}
 
 			@Override

@@ -1,4 +1,4 @@
-package Game1;
+package SpaceInvader;
 
 import FlappyBird.GameFont;
 import com.badlogic.gdx.Gdx;
@@ -7,7 +7,6 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -19,7 +18,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.phoenix.Client;
 import com.phoenix.MultipleScreen;
 
-public class EndScreen implements Screen
+public class EndScreen extends MainScreen implements Screen
 {
     MultipleScreen multi;
 
@@ -27,10 +26,11 @@ public class EndScreen implements Screen
     private Preferences prefs = Gdx.app.getPreferences("Space Invader");
     private GameFont ScoreFont;
     private Stage stage;
-    private TextureAtlas textureAtlas;
-    private float[] backgroundOffsets = {0,0,0,0};
+
+    //private TextureAtlas textureAtlas;
+    //private float[] backgroundOffsets = {0,0,0,0};
     private TextureRegion[] backgrounds;
-    private float backgroundmaxSpeed;
+    //private float backgroundmaxSpeed;
     private final int World_width = Gdx.graphics.getWidth();
     private final int World_height = Gdx.graphics.getHeight();
 
@@ -45,6 +45,7 @@ public class EndScreen implements Screen
 
     public EndScreen(MultipleScreen x)
     {
+        super(x);
         multi = x;
     }
 
@@ -57,13 +58,13 @@ public class EndScreen implements Screen
 
         mySkin = new Skin(Gdx.files.internal("Skin/glassyui/glassy-ui.json"));
 
-        textureAtlas = new TextureAtlas("Space Invader/Atlas/Images2.atlas");
-        backgrounds = new TextureRegion[4];
-        backgrounds[0] = textureAtlas.findRegion("Starscape00");
-        backgrounds[1] = textureAtlas.findRegion("Starscape01");
-        backgrounds[2] = textureAtlas.findRegion("Starscape02");
-        backgrounds[3] = textureAtlas.findRegion("Starscape03");
-        backgroundmaxSpeed = (float)(World_height)/4;
+//        textureAtlas = new TextureAtlas("Space Invader/Atlas/Images2.atlas");
+//        backgrounds = new TextureRegion[4];
+//        backgrounds[0] = textureAtlas.findRegion("Starscape00");
+//        backgrounds[1] = textureAtlas.findRegion("Starscape01");
+//        backgrounds[2] = textureAtlas.findRegion("Starscape02");
+//        backgrounds[3] = textureAtlas.findRegion("Starscape03");
+//        backgroundmaxSpeed = (float)(World_height)/4;
 
         batch = new SpriteBatch();
 
@@ -159,9 +160,26 @@ public class EndScreen implements Screen
     {
         batch.begin();
 
-        renderBackground(delta);
-        ScoreFont.draw(batch,"High Score: "+prefs.getInteger("highscore"),(World_width/2)-(ScoreFont.getTextwidth()/2),World_height-ScoreFont.getTextheight());
-        ScoreFont.draw(batch,"Score: "+MainScreen.score,(World_width/4f)-(ScoreFont.getTextwidth()/2),World_height-ScoreFont.getTextheight());
+        MenuScreen.renderBackground(delta,batch);
+
+        if(MenuScreen.multiOrNot)
+        {
+            int higher = Math.max(prefs.getInteger("highscore"),prefs.getInteger("highscore2"));
+            ScoreFont.draw(batch,"High Score: "+ higher,(World_width/2)-(ScoreFont.textWidth()/2),World_height-ScoreFont.textHeight());
+
+            if(prefs.getInteger("highscore") > prefs.getInteger("highscore2"))
+            {
+                ScoreFont.draw(batch,"Player one got higher/n nenene",(World_width/2)-(ScoreFont.textWidth()/2),World_height-ScoreFont.textHeight() - (World_height * 0.05f));
+            }
+            else
+            {
+                ScoreFont.draw(batch,"Player two got higher",(World_width/2)-(ScoreFont.textWidth()/2),World_height-ScoreFont.textHeight() - (World_height * 0.05f));
+            }
+        }
+        else
+        {
+            ScoreFont.draw(batch, "High Score: " + prefs.getInteger("highscore"), (World_width / 2) - (ScoreFont.textWidth() / 2), World_height - ScoreFont.textHeight());
+        }
 
         batch.end();
 
@@ -169,29 +187,29 @@ public class EndScreen implements Screen
         stage.draw();
     }
 
-    private void renderBackground(float delta)
-    {
-        //the furthest background is slower
-        backgroundOffsets[0] += delta * backgroundmaxSpeed / 8;
-        //faster
-        backgroundOffsets[1] += delta * backgroundmaxSpeed / 4;
-        //faster
-        backgroundOffsets[2] += delta * backgroundmaxSpeed / 2;
-        //faster
-        backgroundOffsets[3] += delta * backgroundmaxSpeed;
-
-        for (int i = 0; i < backgroundOffsets.length; i++)
-        {
-            //resetting the offsets if it became bigger than the height of the screen
-            if(backgroundOffsets[i] > World_height)
-            {
-                backgroundOffsets[i] = 0;
-            }
-
-            batch.draw(backgrounds[i],0,-backgroundOffsets[i],World_width,World_height);
-            batch.draw(backgrounds[i],0,-backgroundOffsets[i]+World_height,World_width,World_height);
-        }
-    }
+//    private void renderBackground(float delta)
+//    {
+//        //the furthest background is slower
+//        backgroundOffsets[0] += delta * backgroundmaxSpeed / 8;
+//        //faster
+//        backgroundOffsets[1] += delta * backgroundmaxSpeed / 4;
+//        //faster
+//        backgroundOffsets[2] += delta * backgroundmaxSpeed / 2;
+//        //faster
+//        backgroundOffsets[3] += delta * backgroundmaxSpeed;
+//
+//        for (int i = 0; i < backgroundOffsets.length; i++)
+//        {
+//            //resetting the offsets if it became bigger than the height of the screen
+//            if(backgroundOffsets[i] > World_height)
+//            {
+//                backgroundOffsets[i] = 0;
+//            }
+//
+//            batch.draw(backgrounds[i],0,-backgroundOffsets[i],World_width,World_height);
+//            batch.draw(backgrounds[i],0,-backgroundOffsets[i]+World_height,World_width,World_height);
+//        }
+//    }
 
     @Override
     public void resize(int width, int height) {
@@ -220,6 +238,6 @@ public class EndScreen implements Screen
         mySkin.dispose();
         stage.dispose();
         music.dispose();
-        textureAtlas.dispose();
+        //MenuScreen.textureAtlas.dispose();
     }
 }

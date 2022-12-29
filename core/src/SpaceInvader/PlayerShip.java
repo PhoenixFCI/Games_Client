@@ -1,4 +1,4 @@
-package Game1;
+package SpaceInvader;
 
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -34,6 +34,5 @@ class PlayerShip extends Ships{
 
         return laser;
     }
-
 
 }

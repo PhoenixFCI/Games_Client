@@ -1,4 +1,4 @@
-package Game1;
+package SpaceInvader;
 
 import FlappyBird.GameFont;
 import com.badlogic.gdx.Gdx;
@@ -30,7 +30,7 @@ import java.util.ListIterator;
 import java.util.Random;
 
 
-public class MainScreen implements Screen
+public class MainScreen extends MenuScreen implements Screen
 {
 
     public enum State
@@ -48,7 +48,7 @@ public class MainScreen implements Screen
     //Score
     GameFont ScoreFont;
     private Preferences prefs = Gdx.app.getPreferences("Space Invader");
-    public static int score = 0;
+    int scorePlayerOne = 0, scorePlayerTwo = 0;
 
     //Controlling the num of enemies which appear in the screen
     int MaxEnemyNum = 3, EnemyCounter = 1;
@@ -72,12 +72,12 @@ public class MainScreen implements Screen
     private SpriteBatch batch;
     private Texture explosion;
     private TextureAtlas textureAtlas;
-    private TextureRegion[] backgrounds;
+    //private TextureRegion[] backgrounds;
     private  TextureRegion playerShipTexture, playerShield, enemyShipTexture, enemyShield, playerLaser, enemyLaser;
 
     //Timing
-    private float[] backgroundOffsets = {0,0,0,0};
-    private float backgroundmaxSpeed;
+    //private float[] backgroundOffsets = {0,0,0,0};
+    //private float backgroundmaxSpeed;
     private float timeBetweenEnemySpawn = 3f, enemySpawnTimer = 0;
 
     //world parameters
@@ -86,10 +86,10 @@ public class MainScreen implements Screen
 
 
     //Game Objects
-    private PlayerShip playership;
+    private PlayerShip playership,playership2;
     private LinkedList<EnemyShip> enemyshipsList;
 
-    private LinkedList<Lasers> playerLaserList, enemyLaserList;
+    private LinkedList<Lasers> playerLaserList,playerLaserList2, enemyLaserList;
     private LinkedList<Explosion> explosionList;
 
 
@@ -97,8 +97,13 @@ public class MainScreen implements Screen
     private Sound laserSound,ShieldDownSound,ShieldUpSound;
 
 
+    //For modes (easy,norma,hard)
+    private int playerShieldAmount, enemySpeed, enemyShieldAmount, enemyLaserSpeed;
+    private float enemyTimeShot;
+
     public MainScreen(MultipleScreen multi)
     {
+        super(multi);
         this.multi = multi;
     }
 
@@ -108,6 +113,9 @@ public class MainScreen implements Screen
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
         mySkin = new Skin(Gdx.files.internal("Skin/glassyui/glassy-ui.json"));
+
+        //To initialize the modes variables
+        Modes();
 
         //Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
 
@@ -122,13 +130,13 @@ public class MainScreen implements Screen
         textureAtlas = new TextureAtlas("Space Invader/Atlas/Images2.atlas");
 
         //set up the BackGrounds
-        backgrounds = new TextureRegion[4];
-        backgrounds[0] = textureAtlas.findRegion("Starscape00");
-        backgrounds[1] = textureAtlas.findRegion("Starscape01");
-        backgrounds[2] = textureAtlas.findRegion("Starscape02");
-        backgrounds[3] = textureAtlas.findRegion("Starscape03");
-
-        backgroundmaxSpeed = (float)(World_height)/4;
+//        backgrounds = new TextureRegion[4];
+//        backgrounds[0] = textureAtlas.findRegion("Starscape00");
+//        backgrounds[1] = textureAtlas.findRegion("Starscape01");
+//        backgrounds[2] = textureAtlas.findRegion("Starscape02");
+//        backgrounds[3] = textureAtlas.findRegion("Starscape03");
+//
+//        backgroundmaxSpeed = (float)(World_height)/4;
 
 
         //Initialize texture regions
@@ -142,8 +150,21 @@ public class MainScreen implements Screen
         playerLaser = textureAtlas.findRegion("laserBlue05");
 
         //set up game objects
-        playership = new PlayerShip(400,5,90,90,World_width/2,World_height/4,
-                4,23,450,0.6f,playerShipTexture,playerShield,playerLaser);
+        if(MenuScreen.multiOrNot)
+        {
+            playership = new PlayerShip(400,playerShieldAmount,90,90,(int)(World_width - (World_width * 0.6667f)),World_height/4,
+                    4,23,450,0.6f,playerShipTexture,playerShield,playerLaser);
+
+            playership2 = new PlayerShip(400,playerShieldAmount,90,90,(int)(World_width - (World_width * 0.3333f)),World_height/4,
+                    4,23,450,0.6f,playerShipTexture,playerShield,playerLaser);
+            playerLaserList2 = new LinkedList<>();
+        }
+        else
+        {
+            playership = new PlayerShip(400,playerShieldAmount,90,90,World_width/2,World_height/4,
+                    4,23,450,0.6f,playerShipTexture,playerShield,playerLaser);
+        }
+
         enemyshipsList = new LinkedList<>();
 
         playerLaserList = new LinkedList<>();
@@ -154,7 +175,13 @@ public class MainScreen implements Screen
 
         //Font
         String fontPath = "Robot/joystix.monospace-regular.ttf";
-        ScoreFont=new GameFont(fontPath,25, com.badlogic.gdx.graphics.Color.WHITE, Color.BLACK,1);
+        if(MenuScreen.multiOrNot)
+        {
+            ScoreFont = new GameFont(fontPath, 15, com.badlogic.gdx.graphics.Color.WHITE, Color.BLACK, 1);
+        }
+        else {
+            ScoreFont = new GameFont(fontPath, 25, com.badlogic.gdx.graphics.Color.WHITE, Color.BLACK, 1);
+        }
 
 
         //Sounds
@@ -177,17 +204,25 @@ public class MainScreen implements Screen
                     state = State.PAUSE;
                 }
 
-                if (playership.lives > 0) {
+                if (playership.lives > 0 || (MenuScreen.multiOrNot && playership2.lives > 0))
+                {
                     batch.begin();
 
-                    renderBackground(delta);
+                    MenuScreen.renderBackground(delta,batch);
 
                     inputs(delta);
                     playership.update(delta);
+
+                    if(MenuScreen.multiOrNot)
+                    {
+                        playership2.update(delta);
+                    }
+
                     spawnEnemy(delta);
 
                     ListIterator<EnemyShip> enemyiterator = enemyshipsList.listIterator();
-                    while (enemyiterator.hasNext()) {
+                    while (enemyiterator.hasNext())
+                    {
                         EnemyShip enemyship = enemyiterator.next();
                         moveEnemies(enemyship, delta);
                         enemyship.update(delta);
@@ -201,11 +236,25 @@ public class MainScreen implements Screen
                     renderLasers(delta);
 
                     //player ships
-                    playership.draw(batch);
+                    if(playership.lives > 0)
+                    {
+                        playership.draw(batch);
+                    }
+
+
+                    if(MenuScreen.multiOrNot && playership2.lives > 0)
+                    {
+                        playership2.draw(batch);
+                    }
 
 
                     //Collision
                     Collisions();
+
+                    if(MenuScreen.multiOrNot)
+                    {
+                        Collisions2();
+                    }
 
                     //explosions
                     renderExplosions(delta);
@@ -237,13 +286,28 @@ public class MainScreen implements Screen
     public void drawScore()
     {
         //updating highScore
-        if (score > prefs.getInteger("highscore")) {
-            prefs.putInteger("highscore", score);
+        if (scorePlayerOne > prefs.getInteger("highscore")) {
+            prefs.putInteger("highscore", scorePlayerOne);
             prefs.flush();
         }
-        ScoreFont.draw(batch,"Score: "+score,5,World_height-ScoreFont.getTextheight());
-        ScoreFont.draw(batch,"Lives: "+playership.lives,(World_width/2) - (World_width * 0.15f),World_height-ScoreFont.getTextheight());
-        ScoreFont.draw(batch,"High Score: "+prefs.getInteger("highscore"),World_width-ScoreFont.getTextwidth()*2,World_height-ScoreFont.getTextheight());
+
+        ScoreFont.draw(batch,"Score: "+ scorePlayerOne,5,World_height-ScoreFont.textHeight());
+        ScoreFont.draw(batch,"Lives: "+playership.lives,(World_width/2) - (World_width * 0.15f),World_height-ScoreFont.textHeight());
+        ScoreFont.draw(batch,"High Score: "+prefs.getInteger("highscore"),World_width-ScoreFont.textWidth()*2,World_height-ScoreFont.textHeight());
+
+        if(MenuScreen.multiOrNot)
+        {
+
+            if (scorePlayerTwo > prefs.getInteger("highscore2"))
+            {
+                prefs.putInteger("highscore2", scorePlayerTwo);
+                prefs.flush();
+            }
+
+            ScoreFont.draw(batch,"Score: "+ scorePlayerTwo,5,World_height-ScoreFont.textHeight() - (World_height * 0.05f));
+            ScoreFont.draw(batch,"Lives: "+playership2.lives,(World_width/2) - (World_width * 0.15f),World_height-ScoreFont.textHeight() - (World_height * 0.05f));
+            ScoreFont.draw(batch,"High Score: "+prefs.getInteger("highscore2"),World_width-ScoreFont.textWidth()*2,World_height-ScoreFont.textHeight() - (World_height * 0.05f));
+        }
     }
 
     private void spawnEnemy(float delta)
@@ -251,9 +315,9 @@ public class MainScreen implements Screen
         enemySpawnTimer+=delta;
         if(enemySpawnTimer > timeBetweenEnemySpawn && MaxEnemyNum >= EnemyCounter )
         {
-            enemyshipsList.add(new EnemyShip(190, 2, 60, 60, random.nextFloat() *
+            enemyshipsList.add(new EnemyShip(enemySpeed, enemyShieldAmount, 60, 60, random.nextFloat() *
                     (World_width - 10), random.nextFloat() * (World_height - 5), 6, 25,
-                    300, 0.8f, enemyShipTexture, enemyShield, enemyLaser));
+                    enemyLaserSpeed, enemyTimeShot, enemyShipTexture, enemyShield, enemyLaser));
 
 
             enemySpawnTimer -= timeBetweenEnemySpawn;
@@ -285,50 +349,33 @@ public class MainScreen implements Screen
 
 
     //Scrolling background
-    private void renderBackground(float delta)
-    {
-        //the furthest background is slower
-        backgroundOffsets[0] += delta * backgroundmaxSpeed / 8;
-        //faster
-        backgroundOffsets[1] += delta * backgroundmaxSpeed / 4;
-        //faster
-        backgroundOffsets[2] += delta * backgroundmaxSpeed / 2;
-        //faster
-        backgroundOffsets[3] += delta * backgroundmaxSpeed;
-
-        for (int i = 0; i < backgroundOffsets.length; i++)
-        {
-            //resetting the offsets if it became bigger than the height of the screen
-            if(backgroundOffsets[i] > World_height)
-            {
-                backgroundOffsets[i] = 0;
-            }
-
-            batch.draw(backgrounds[i],0,-backgroundOffsets[i],World_width,World_height);
-            batch.draw(backgrounds[i],0,-backgroundOffsets[i]+World_height,World_width,World_height);
-            temp = i;
-        }
-    }
+//    private void renderBackground(float delta)
+//    {
+//        //the furthest background is slower
+//        backgroundOffsets[0] += delta * backgroundmaxSpeed / 8;
+//        //faster
+//        backgroundOffsets[1] += delta * backgroundmaxSpeed / 4;
+//        //faster
+//        backgroundOffsets[2] += delta * backgroundmaxSpeed / 2;
+//        //faster
+//        backgroundOffsets[3] += delta * backgroundmaxSpeed;
+//
+//        for (int i = 0; i < backgroundOffsets.length; i++)
+//        {
+//            //resetting the offsets if it became bigger than the height of the screen
+//            if(backgroundOffsets[i] > World_height)
+//            {
+//                backgroundOffsets[i] = 0;
+//            }
+//
+//            batch.draw(backgrounds[i],0,-backgroundOffsets[i],World_width,World_height);
+//            batch.draw(backgrounds[i],0,-backgroundOffsets[i]+World_height,World_width,World_height);
+//        }
+//    }
 
 
     private void renderLasers(float delta)
     {
-
-        if(Gdx.input.isKeyPressed(Input.Keys.SPACE))
-        {
-            if(playership.canFireLaser())
-            {
-                long id = laserSound.play(1.0f);
-                laserSound.setLooping(id,false);
-
-                Lasers[] lasers = playership.fireLasers();
-                for(Lasers laser : lasers)
-                {
-                    playerLaserList.add(laser);
-                }
-            }
-        }
-
         ListIterator<EnemyShip> enemyiterator = enemyshipsList.listIterator();
         while(enemyiterator.hasNext())
         {
@@ -358,6 +405,21 @@ public class MainScreen implements Screen
         }
 
 
+        //Draw Lasers for player 2
+        if(MenuScreen.multiOrNot)
+        {
+            ListIterator<Lasers> iterator2 = playerLaserList2.listIterator(); //going through the list of playerLaser to add or remove ... etc
+            while (iterator2.hasNext()) {
+                Lasers laser = iterator2.next();
+                laser.draw(batch);
+                laser.boundingBox.y += laser.m_speed * delta; //Player Laser speed
+                if (laser.boundingBox.y > World_height) {
+                    iterator2.remove();
+                }
+            }
+        }
+
+        //Draw Enemy Laser
         iterator = enemyLaserList.listIterator(); //going through the list of enemylaser to add or remove ... etc
         while(iterator.hasNext())
         {
@@ -393,7 +455,71 @@ public class MainScreen implements Screen
                         temp.remove();
                         explosionList.add(new Explosion(explosion,new Rectangle(enemyship.boundingBox),0.7f));
                         EnemyCounter--;
-                        score++;
+                        scorePlayerOne++;
+                    }
+                    iterator.remove();
+                    break;
+                }
+            }
+        }
+
+
+        //for each enemy laser, check whether it intersects the player ship
+        iterator = enemyLaserList.listIterator(); //going through the list of enemyLaser to add or remove ... etc
+        while(iterator.hasNext())
+        {
+            Lasers laser = iterator.next();
+            if(playership.intersects(laser.boundingBox) && playership.lives > 0)
+            {
+                if(playership.Shield == 1)
+                {
+                    long id = ShieldDownSound.play(1.0f);
+                    ShieldDownSound.setLooping(id,false);
+                }
+                //removing when hitting the player
+                if(playership.hit(laser))
+                {
+                    explosionList.add(new Explosion(explosion,new Rectangle(playership.boundingBox),1.4f));
+                    playership.lives--;
+                    playership.Shield = playerShieldAmount;
+                    once = true;
+                }
+
+                iterator.remove();
+            }
+        }
+
+
+        if(playership.Shield == MenuScreen.playerShieldAmount && once)
+        {
+            long id = ShieldUpSound.play(1.0f);
+            ShieldUpSound.setLooping(id,false);
+            once = false;
+        }
+    }
+
+
+    private void Collisions2()
+    {
+        //for each player laser, check whether it intersects an enemy ship
+        ListIterator<Lasers> iterator = playerLaserList2.listIterator(); //going through the list of playerLaser to add or remove ... etc
+        while(iterator.hasNext())
+        {
+            Lasers laser = iterator.next();
+            ListIterator<EnemyShip> temp = enemyshipsList.listIterator();
+
+            while(temp.hasNext())
+            {
+                EnemyShip enemyship = temp.next();
+                if(enemyship.intersects(laser.boundingBox))
+                {
+                    //removing when hitting the enemy
+                    if(enemyship.hit(laser))
+                    {
+                        temp.remove();
+                        explosionList.add(new Explosion(explosion,new Rectangle(enemyship.boundingBox),0.7f));
+                        EnemyCounter--;
+                        scorePlayerTwo++;
                     }
                     iterator.remove();
                     break;
@@ -407,36 +533,34 @@ public class MainScreen implements Screen
         while(iterator.hasNext())
         {
             Lasers laser = iterator.next();
-            if(playership.intersects(laser.boundingBox))
+            if(playership2.intersects(laser.boundingBox) && playership2.lives > 0)
             {
-                if(playership.Shield == 1)
+                if(playership2.Shield == 1)
                 {
                     long id = ShieldDownSound.play(1.0f);
                     ShieldDownSound.setLooping(id,false);
                 }
                 //removing when hitting the player
-                if(playership.hit(laser))
+                if(playership2.hit(laser))
                 {
-                    explosionList.add(new Explosion(explosion,new Rectangle(playership.boundingBox),1.4f));
-                    playership.lives--;
-                    playership.Shield = 5;
+                    explosionList.add(new Explosion(explosion,new Rectangle(playership2.boundingBox),1.4f));
+                    playership2.lives--;
+                    playership2.Shield = playerShieldAmount;
                     once = true;
                 }
+
                 iterator.remove();
             }
         }
 
 
-        if(playership.Shield == 5 && once)
+        if(playership2.Shield == MenuScreen.playerShieldAmount && once)
         {
             long id = ShieldUpSound.play(1.0f);
             ShieldUpSound.setLooping(id,false);
             once = false;
         }
-
     }
-
-
 
 
     private void moveEnemies(EnemyShip enemyship,float delta)
@@ -474,16 +598,35 @@ public class MainScreen implements Screen
     }
 
 
-    //movmenets and world limit @Menna Ammar
+    //movements and world limit @Menna Ammar ..... Updated by Kareem (second player added)
     private void inputs(float delta)
     {
-        //keyboard input
+        //keyboard input for player 1
         float leftlimit, rightlimit, uplimit, downlimit;
         leftlimit = -playership.boundingBox.x;
         downlimit = -playership.boundingBox.y;
 
         rightlimit= World_width - playership.boundingBox.x - playership.boundingBox.width;
         uplimit= (World_height/2) - playership.boundingBox.y - playership.boundingBox.height;
+
+        //Player 1 shooting
+        if(Gdx.input.isKeyPressed(Input.Keys.SPACE) && playership.lives > 0)
+        {
+            if(playership.canFireLaser())
+            {
+                long id = laserSound.play(1.0f);
+                laserSound.setLooping(id,false);
+
+                Lasers[] lasers = playership.fireLasers();
+                for(Lasers laser : lasers)
+                {
+                    playerLaserList.add(laser);
+                }
+            }
+
+        }
+
+
 
         //moving forward
         if(Gdx.input.isKeyPressed(Input.Keys.D) && rightlimit > 0)
@@ -515,8 +658,78 @@ public class MainScreen implements Screen
         {
             playership.translate(0f,Math.max(-playership.m_speed*delta,downlimit));
         }
+
+
+        //checks if it is multiplayer or not
+        if(MenuScreen.multiOrNot)
+        {
+            //KeyBoard inputs for player 2
+            float leftlimit2, rightlimit2, uplimit2, downlimit2;
+            leftlimit2 = -playership2.boundingBox.x;
+            downlimit2 = -playership2.boundingBox.y;
+
+            rightlimit2 = World_width - playership2.boundingBox.x - playership2.boundingBox.width;
+            uplimit2 = (World_height / 2) - playership2.boundingBox.y - playership2.boundingBox.height;
+
+
+            //Player 2 Shooting
+            if (Gdx.input.isButtonPressed(Input.Buttons.LEFT) && playership2.lives > 0)
+            {
+                if (playership2.canFireLaser()) {
+                    long id = laserSound.play(1.0f);
+                    laserSound.setLooping(id, false);
+
+                    Lasers[] lasers = playership2.fireLasers();
+                    for (Lasers laser : lasers) {
+                        playerLaserList2.add(laser);
+                    }
+                }
+            }
+
+            if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && rightlimit2 > 0) {
+                playership2.translate(Math.min(playership2.m_speed * delta, rightlimit2), 0f);
+            }
+
+            //moving upward
+            if (Gdx.input.isKeyPressed(Input.Keys.UP) && uplimit2 > 0) {
+                playership2.translate(0f, Math.min(playership2.m_speed * delta, uplimit2));
+            }
+
+            //moving left
+            if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && leftlimit2 < 0) {
+                playership2.translate(Math.max(-playership2.m_speed * delta, leftlimit2), 0f);
+            }
+
+            //Moving downward
+            if (Gdx.input.isKeyPressed(Input.Keys.DOWN) && downlimit2 < 0) {
+                playership2.translate(0f, Math.max(-playership2.m_speed * delta, downlimit2));
+            }
+        }
     }
 
+
+    private void Modes()
+    {
+        playerShieldAmount = MenuScreen.playerShieldAmount;
+
+        enemySpeed = MenuScreen.enemySpeed;
+        enemyShieldAmount = MenuScreen.enemyShieldAmount;
+        enemyLaserSpeed = MenuScreen.enemyLaserSpeed;
+        enemyTimeShot = MenuScreen.enemyTimeShot;
+
+        if(playerShieldAmount == 7)
+        {
+            MaxEnemyNum = 1;
+        }
+        else if(playerShieldAmount == 5)
+        {
+            MaxEnemyNum = 3;
+        }
+        else if(playerShieldAmount == 3)
+        {
+            MaxEnemyNum = 5;
+        }
+    }
 
 
     public void pauseMenu()
@@ -556,7 +769,7 @@ public class MainScreen implements Screen
             @Override
             public void clicked(InputEvent event, float x, float y)
             {
-                Gdx.app.exit();
+                multi.changeScreen(new MenuScreen(multi));
             }
 
             @Override
@@ -575,7 +788,6 @@ public class MainScreen implements Screen
         pauseOnce = false;
     }
 
-
     @Override
     public void resize(int width, int height)
     {
@@ -588,7 +800,7 @@ public class MainScreen implements Screen
     {
         batch.begin();
 
-        renderBackground(0);
+        renderBackground(0,batch);
 
         ListIterator<EnemyShip> enemyiterator = enemyshipsList.listIterator();
         while (enemyiterator.hasNext())
@@ -605,6 +817,11 @@ public class MainScreen implements Screen
         //player ships
         playership.draw(batch);
 
+        if(MenuScreen.multiOrNot)
+        {
+            playership2.draw(batch);
+        }
+
 
         //explosions
         renderExplosions(0);
@@ -614,7 +831,6 @@ public class MainScreen implements Screen
 
         batch.end();
     }
-
 
     @Override
     public void resume() {
@@ -632,6 +848,10 @@ public class MainScreen implements Screen
         batch.dispose();
         textureAtlas.dispose();
         explosion.dispose();
+        mySkin.dispose();
+        laserSound.dispose();
+        ShieldDownSound.dispose();
+        ShieldUpSound.dispose();
         stage.dispose();
     }
 }
