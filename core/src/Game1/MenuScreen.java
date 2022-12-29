@@ -23,14 +23,14 @@ public class MenuScreen implements Screen
 {
     MultipleScreen multi;
 
-    private SpriteBatch batch;
+    private static SpriteBatch batch;
     private Stage stage;
-    private TextureAtlas textureAtlas;
-    private float[] backgroundOffsets = {0,0,0,0};
-    private TextureRegion[] backgrounds;
-    private float backgroundmaxSpeed;
-    private final int World_width = Gdx.graphics.getWidth();
-    private final int World_height = Gdx.graphics.getHeight();
+    public static TextureAtlas textureAtlas;
+    public static float[] backgroundOffsets = {0,0,0,0};
+    public static TextureRegion[] backgrounds;
+    public static float backgroundmaxSpeed;
+    public static final int World_width = Gdx.graphics.getWidth();
+    public static final int World_height = Gdx.graphics.getHeight();
 
     private Label labelStart, labelExit, labelNormal,labelHard, labelEasy, labelMulti;
 
@@ -337,7 +337,7 @@ public class MenuScreen implements Screen
     {
         batch.begin();
 
-        renderBackground(delta);
+        renderBackground(delta,batch);
 
         batch.end();
 
@@ -345,7 +345,7 @@ public class MenuScreen implements Screen
         stage.draw();
     }
 
-    private void renderBackground(float delta)
+    public static void renderBackground(float delta,SpriteBatch batch)
     {
         //the furthest background is slower
         backgroundOffsets[0] += delta * backgroundmaxSpeed / 8;
@@ -396,6 +396,6 @@ public class MenuScreen implements Screen
         music.dispose();
         mySkin.dispose();
         stage.dispose();
-        textureAtlas.dispose();
+        //textureAtlas.dispose();
     }
 }
