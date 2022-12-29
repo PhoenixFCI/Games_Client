@@ -1,9 +1,7 @@
 package com.phoenix;
 
-import Game1.EndScreen;
-import Game1.MainScreen;
 import FlappyBird.GameScreen;
-import Game1.MenuScreen;
+import SpaceInvader.MenuScreen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;

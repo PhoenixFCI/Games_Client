@@ -1,4 +1,4 @@
-package Game1;
+package SpaceInvader;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;

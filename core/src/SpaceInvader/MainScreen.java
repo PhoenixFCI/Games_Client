@@ -1,4 +1,4 @@
-package Game1;
+package SpaceInvader;
 
 import FlappyBird.GameFont;
 import com.badlogic.gdx.Gdx;
