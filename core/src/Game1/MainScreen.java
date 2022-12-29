@@ -98,6 +98,10 @@ public class MainScreen implements Screen
     private Sound laserSound,ShieldDownSound,ShieldUpSound;
 
 
+    //For modes (easy,norma,hard)
+    private int playerShieldAmount, enemySpeed, enemyShieldAmount, enemyLaserSpeed;
+    private float enemyTimeShot;
+
     public MainScreen(MultipleScreen multi)
     {
         this.multi = multi;
@@ -109,6 +113,9 @@ public class MainScreen implements Screen
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
         mySkin = new Skin(Gdx.files.internal("Skin/glassyui/glassy-ui.json"));
+
+        //To initialize the modes variables
+        Modes();
 
         //Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
 
@@ -143,7 +150,7 @@ public class MainScreen implements Screen
         playerLaser = textureAtlas.findRegion("laserBlue05");
 
         //set up game objects
-        playership = new PlayerShip(400,5,90,90,World_width/2,World_height/4,
+        playership = new PlayerShip(400,playerShieldAmount,90,90,World_width/2,World_height/4,
                 4,23,450,0.6f,playerShipTexture,playerShield,playerLaser);
         enemyshipsList = new LinkedList<>();
 
@@ -252,9 +259,9 @@ public class MainScreen implements Screen
         enemySpawnTimer+=delta;
         if(enemySpawnTimer > timeBetweenEnemySpawn && MaxEnemyNum >= EnemyCounter )
         {
-            enemyshipsList.add(new EnemyShip(190, 2, 60, 60, random.nextFloat() *
+            enemyshipsList.add(new EnemyShip(enemySpeed, enemyShieldAmount, 60, 60, random.nextFloat() *
                     (World_width - 10), random.nextFloat() * (World_height - 5), 6, 25,
-                    300, 0.8f, enemyShipTexture, enemyShield, enemyLaser));
+                    enemyLaserSpeed, enemyTimeShot, enemyShipTexture, enemyShield, enemyLaser));
 
 
             enemySpawnTimer -= timeBetweenEnemySpawn;
@@ -520,6 +527,30 @@ public class MainScreen implements Screen
 
 
 
+    private void Modes()
+    {
+        playerShieldAmount = MenuScreen.playerShieldAmount;
+
+        enemySpeed = MenuScreen.enemySpeed;
+        enemyShieldAmount = MenuScreen.enemyShieldAmount;
+        enemyLaserSpeed = MenuScreen.enemyLaserSpeed;
+        enemyTimeShot = MenuScreen.enemyTimeShot;
+
+        if(playerShieldAmount == 7)
+        {
+            MaxEnemyNum = 1;
+        }
+        else if(playerShieldAmount == 5)
+        {
+            MaxEnemyNum = 3;
+        }
+        else if(playerShieldAmount == 3)
+        {
+            MaxEnemyNum = 5;
+        }
+    }
+
+
     public void pauseMenu()
     {
         labelStart = new com.badlogic.gdx.scenes.scene2d.ui.Label("Resume",mySkin);
@@ -557,7 +588,7 @@ public class MainScreen implements Screen
             @Override
             public void clicked(InputEvent event, float x, float y)
             {
-                Gdx.app.exit();
+                multi.changeScreen(new MenuScreen(multi));
             }
 
             @Override

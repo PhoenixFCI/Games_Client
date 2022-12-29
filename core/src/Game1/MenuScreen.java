@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -33,11 +34,14 @@ public class MenuScreen implements Screen
     private final int World_width = Gdx.graphics.getWidth();
     private final int World_height = Gdx.graphics.getHeight();
 
-    private Label labelStart;
-    private Label labelExit;
+    private Label labelStart, labelExit, labelNormal,labelHard, labelEasy;
 
     private Skin mySkin;
     private Music music;
+
+
+    public static int playerShieldAmount, enemySpeed, enemyShieldAmount, enemyLaserSpeed;
+    public static float enemyTimeShot;
 
     public MenuScreen(MultipleScreen x)
     {
@@ -51,8 +55,10 @@ public class MenuScreen implements Screen
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
 
+        //Skin for buttons and labels
         mySkin = new Skin(Gdx.files.internal("Skin/glassyui/glassy-ui.json"));
 
+        //Uploading the backgrounds
         textureAtlas = new TextureAtlas("Space Invader/Atlas/Images2.atlas");
         backgrounds = new TextureRegion[4];
         backgrounds[0] = textureAtlas.findRegion("Starscape00");
@@ -61,14 +67,17 @@ public class MenuScreen implements Screen
         backgrounds[3] = textureAtlas.findRegion("Starscape03");
         backgroundmaxSpeed = (float)(World_height)/4;
 
+        //creating Spritebatch
         batch = new SpriteBatch();
 
+        //Background Music
         music = Gdx.audio.newMusic(Gdx.files.internal("Space Invader/Audio/MenuScreen.wav"));
         music.setVolume(1.0f);
         music.setLooping(true);
         music.play();
 
 
+        //Creating the labels and adding actions for them
         labelStart = new Label("Start",mySkin);
         labelStart.setSize(labelStart.getWidth()*3,labelStart.getHeight()*3);
         labelStart.setFontScale(3,3);
@@ -78,6 +87,24 @@ public class MenuScreen implements Screen
         labelExit.setSize(labelExit.getWidth() * 3,labelExit.getHeight() * 3);
         labelExit.setPosition(labelStart.getX() + (labelExit.getWidth() * 0.2f),labelStart.getY() - (labelStart.getY() * 0.35f));
         labelExit.setFontScale(3,3);
+
+
+        labelEasy = new Label("Easy",mySkin);
+        labelEasy.setSize(labelEasy.getWidth()*1.9f,labelEasy.getHeight()*1.9f);
+        labelEasy.setPosition(0,(int)(Gdx.graphics.getHeight() / 2));
+        labelEasy.setFontScale(2,2);
+
+
+        labelNormal = new Label("Normal",mySkin);
+        labelNormal.setSize(labelNormal.getWidth()*1.9f,labelNormal.getHeight()*1.9f);
+        labelNormal.setPosition(labelEasy.getX(),labelEasy.getY() - labelNormal.getHeight() - (Gdx.graphics.getHeight()*0.02f));
+        labelNormal.setFontScale(2,2);
+
+
+        labelHard = new Label("Hard",mySkin);
+        labelHard.setSize(labelHard.getWidth()*1.9f,labelHard.getHeight()*1.9f);
+        labelHard.setPosition(labelNormal.getX(),labelNormal.getY() - labelHard.getHeight() - (Gdx.graphics.getHeight()*0.02f));
+        labelHard.setFontScale(2,2);
 
         labelStart.addListener(new ClickListener()
         {
@@ -119,8 +146,147 @@ public class MenuScreen implements Screen
         });
 
 
+        labelEasy.addListener(new ClickListener()
+        {
+            @Override
+            public void clicked(InputEvent event, float x, float y)
+            {
+                labelEasy.setColor(Color.GREEN);
+                labelEasy.setTouchable(Touchable.disabled);
+                if(!labelNormal.isTouchable())
+                {
+                    labelNormal.setColor(Color.WHITE);
+                    labelNormal.setTouchable(Touchable.enabled);
+                }
+
+                if(!labelHard.isTouchable())
+                {
+                    labelHard.setColor(Color.WHITE);
+                    labelHard.setTouchable(Touchable.enabled);
+                }
+
+                //Initialize the variables
+                playerShieldAmount = 7;
+
+                enemySpeed = 140;
+                enemyShieldAmount = 1;
+                enemyLaserSpeed = 240;
+                enemyTimeShot = 1.5f;
+            }
+
+            @Override
+            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor)
+            {
+                labelEasy.setColor(Color.GREEN);
+            }
+
+            @Override
+            public void exit(InputEvent event, float x, float y, int pointer, Actor fromActor)
+            {
+                if(labelEasy.isTouchable())
+                {
+                    labelEasy.setColor(Color.WHITE);
+                }
+            }
+        });
+
+
+        labelNormal.addListener(new ClickListener()
+        {
+            @Override
+            public void clicked(InputEvent event, float x, float y)
+            {
+                labelNormal.setColor(Color.GREEN);
+                labelNormal.setTouchable(Touchable.disabled);
+                if(!labelEasy.isTouchable())
+                {
+                    labelEasy.setColor(Color.WHITE);
+                    labelEasy.setTouchable(Touchable.enabled);
+                }
+
+                if(!labelHard.isTouchable())
+                {
+                    labelHard.setColor(Color.WHITE);
+                    labelHard.setTouchable(Touchable.enabled);
+                }
+
+                //Initialize the variables
+                playerShieldAmount = 5;
+
+                enemySpeed = 190;
+                enemyShieldAmount = 2;
+                enemyLaserSpeed = 300;
+                enemyTimeShot = 0.8f;
+            }
+
+            @Override
+            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor)
+            {
+                labelNormal.setColor(Color.GREEN);
+            }
+
+            @Override
+            public void exit(InputEvent event, float x, float y, int pointer, Actor fromActor)
+            {
+                if(labelNormal.isTouchable())
+                {
+                    labelNormal.setColor(Color.WHITE);
+                }
+            }
+        });
+
+
+        labelHard.addListener(new ClickListener()
+        {
+            @Override
+            public void clicked(InputEvent event, float x, float y)
+            {
+                labelHard.setColor(Color.GREEN);
+                labelHard.setTouchable(Touchable.disabled);
+                if(!labelEasy.isTouchable())
+                {
+                    labelEasy.setColor(Color.WHITE);
+                    labelEasy.setTouchable(Touchable.enabled);
+                }
+
+                if(!labelNormal.isTouchable())
+                {
+                    labelNormal.setColor(Color.WHITE);
+                    labelNormal.setTouchable(Touchable.enabled);
+                }
+
+
+                //initialize the variables
+                playerShieldAmount = 3;
+
+                enemySpeed = 300;
+                enemyShieldAmount = 3;
+                enemyLaserSpeed = 450;
+                enemyTimeShot = 0.4f;
+            }
+
+            @Override
+            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor)
+            {
+                labelHard.setColor(Color.GREEN);
+            }
+
+            @Override
+            public void exit(InputEvent event, float x, float y, int pointer, Actor fromActor)
+            {
+                if(labelHard.isTouchable())
+                {
+                    labelHard.setColor(Color.WHITE);
+                }
+            }
+        });
+
+
         stage.addActor(labelStart);
         stage.addActor(labelExit);
+        stage.addActor(labelNormal);
+        stage.addActor(labelHard);
+        stage.addActor(labelEasy);
     }
 
 
