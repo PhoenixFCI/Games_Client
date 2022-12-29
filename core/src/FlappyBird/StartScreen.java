@@ -2,6 +2,7 @@ package FlappyBird;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.phoenix.MultipleScreen;
 
 public class StartScreen extends GameOver {
@@ -17,13 +18,12 @@ public class StartScreen extends GameOver {
     public void show() {
         backgroundTexture = new Texture("Robot/background2.jpg");
         super.show();
-        GameOver.restartLabel.setText("Start");
-        GameOver.restartLabel.setSize(restartLabel.getWidth()*1.5f,restartLabel.getHeight()*1.25f);
+        stage.clear();
+        GameOver.restartLabel=new Label("Start",labelStyle);
         GameOver.restartLabel.setFontScale(1.5f,1.5f);
         GameOver.restartLabel.setPosition(Gdx.graphics.getWidth()/2f-restartLabel.getWidth()/2,Gdx.graphics.getHeight()/4.5f);
         GameOver.menuLabel.setPosition(restartLabel.getX() + (restartLabel.getWidth() / 2),restartLabel.getY()-menuLabel.getHeight()-(Gdx.graphics.getHeight()*0.03f));
         GameOver.exitLabel.setPosition(restartLabel.getX() + (restartLabel.getWidth() / 2) - (exitLabel.getWidth() / 2),(menuLabel.getY())-exitLabel.getHeight()-(Gdx.graphics.getHeight()*0.03f));
-
     }
 
     @Override
@@ -34,6 +34,7 @@ public class StartScreen extends GameOver {
         drawBackground(batch);
         batch.end();
         super.render(delta);
+        stage.addActor(restartLabel);
     }
 
     @Override

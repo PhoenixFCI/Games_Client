@@ -21,7 +21,7 @@ public class GameOver implements Screen
     protected static Label menuLabel;
     protected static Label exitLabel;
     protected Stage stage;
-    Label.LabelStyle labelStyle;
+    public static Label.LabelStyle labelStyle;
     protected GameFont govFont;
     public GameOver(MultipleScreen sc){multi=sc;}
 

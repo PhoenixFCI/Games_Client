@@ -291,9 +291,9 @@ public class MainScreen extends MenuScreen implements Screen
             prefs.flush();
         }
 
-        ScoreFont.draw(batch,"Score: "+ scorePlayerOne,5,World_height-ScoreFont.textHeight());
-        ScoreFont.draw(batch,"Lives: "+playership.lives,(World_width/2) - (World_width * 0.15f),World_height-ScoreFont.textHeight());
-        ScoreFont.draw(batch,"High Score: "+prefs.getInteger("highscore"),World_width-ScoreFont.textWidth()*2,World_height-ScoreFont.textHeight());
+        ScoreFont.draw(batch,"Score: "+ scorePlayerOne,5,World_height-ScoreFont.getTextheight());
+        ScoreFont.draw(batch,"Lives: "+playership.lives,(World_width/2) - (World_width * 0.15f),World_height-ScoreFont.getTextheight());
+        ScoreFont.draw(batch,"High Score: "+prefs.getInteger("highscore"),World_width-ScoreFont.getTextwidth()*2,World_height-ScoreFont.getTextheight());
 
         if(MenuScreen.multiOrNot)
         {
@@ -304,9 +304,9 @@ public class MainScreen extends MenuScreen implements Screen
                 prefs.flush();
             }
 
-            ScoreFont.draw(batch,"Score: "+ scorePlayerTwo,5,World_height-ScoreFont.textHeight() - (World_height * 0.05f));
-            ScoreFont.draw(batch,"Lives: "+playership2.lives,(World_width/2) - (World_width * 0.15f),World_height-ScoreFont.textHeight() - (World_height * 0.05f));
-            ScoreFont.draw(batch,"High Score: "+prefs.getInteger("highscore2"),World_width-ScoreFont.textWidth()*2,World_height-ScoreFont.textHeight() - (World_height * 0.05f));
+            ScoreFont.draw(batch,"Score: "+ scorePlayerTwo,5,World_height-ScoreFont.getTextheight() - (World_height * 0.05f));
+            ScoreFont.draw(batch,"Lives: "+playership2.lives,(World_width/2) - (World_width * 0.15f),World_height-ScoreFont.getTextheight() - (World_height * 0.05f));
+            ScoreFont.draw(batch,"High Score: "+prefs.getInteger("highscore2"),World_width-ScoreFont.getTextwidth()*2,World_height-ScoreFont.getTextheight() - (World_height * 0.05f));
         }
     }
 

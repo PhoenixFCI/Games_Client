@@ -1,6 +1,7 @@
 package com.phoenix;
 
 import FlappyBird.GameScreen;
+import FlappyBird.StartScreen;
 import SpaceInvader.MenuScreen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -109,7 +110,7 @@ public class Client implements Screen
 			public void clicked(InputEvent event, float x, float y)
 			{
 				Gdx.graphics.setForegroundFPS(60);
-				multi.changeScreen( new GameScreen(multi));
+				multi.changeScreen( new StartScreen(multi));
 			}
 
 			@Override
@@ -135,14 +136,6 @@ public class Client implements Screen
 	@Override
 	public void render(float delta)
 	{
-		/*if (!videoPlayer.isPlaying()) { // As soon as the video is finished, we start the file again using the same player.
-			try {
-				videoPlayer.play(Gdx.files.internal("Preview/flappy.webm"));
-			} catch (FileNotFoundException e) {
-				Gdx.app.error("gdx-video", "Oh no!");
-			}
-		}*/
-
 		elapsed += Gdx.graphics.getDeltaTime();
 		Gdx.gl.glClearColor(1, 1, 1, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
