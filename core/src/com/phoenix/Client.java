@@ -1,6 +1,7 @@
 package com.phoenix;
 
 import FlappyBird.GameScreen;
+import FlappyBird.StartScreen;
 import SpaceInvader.MenuScreen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -109,7 +110,7 @@ public class Client implements Screen
 			public void clicked(InputEvent event, float x, float y)
 			{
 				Gdx.graphics.setForegroundFPS(60);
-				multi.changeScreen( new GameScreen(multi));
+				multi.changeScreen( new StartScreen(multi));
 			}
 
 			@Override

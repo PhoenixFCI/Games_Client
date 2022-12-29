@@ -165,20 +165,20 @@ public class EndScreen extends MainScreen implements Screen
         if(MenuScreen.multiOrNot)
         {
             int higher = Math.max(prefs.getInteger("highscore"),prefs.getInteger("highscore2"));
-            ScoreFont.draw(batch,"High Score: "+ higher,(World_width/2)-(ScoreFont.textWidth()/2),World_height-ScoreFont.textHeight());
+            ScoreFont.draw(batch,"High Score: "+ higher,(World_width/2)-(ScoreFont.getTextwidth()/2),World_height-ScoreFont.getTextheight());
 
             if(prefs.getInteger("highscore") > prefs.getInteger("highscore2"))
             {
-                ScoreFont.draw(batch,"Player one got higher/n nenene",(World_width/2)-(ScoreFont.textWidth()/2),World_height-ScoreFont.textHeight() - (World_height * 0.05f));
+                ScoreFont.draw(batch,"Player one got higher/n nenene",(World_width/2)-(ScoreFont.getTextwidth()/2),World_height-ScoreFont.getTextheight() - (World_height * 0.05f));
             }
             else
             {
-                ScoreFont.draw(batch,"Player two got higher",(World_width/2)-(ScoreFont.textWidth()/2),World_height-ScoreFont.textHeight() - (World_height * 0.05f));
+                ScoreFont.draw(batch,"Player two got higher",(World_width/2)-(ScoreFont.getTextwidth()/2),World_height-ScoreFont.getTextheight() - (World_height * 0.05f));
             }
         }
         else
         {
-            ScoreFont.draw(batch, "High Score: " + prefs.getInteger("highscore"), (World_width / 2) - (ScoreFont.textWidth() / 2), World_height - ScoreFont.textHeight());
+            ScoreFont.draw(batch, "High Score: " + prefs.getInteger("highscore"), (World_width / 2) - (ScoreFont.getTextwidth() / 2), World_height - ScoreFont.getTextheight());
         }
 
         batch.end();
