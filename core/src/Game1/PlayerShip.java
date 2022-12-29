@@ -1,6 +1,7 @@
 package Game1;
 
 
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 class PlayerShip extends Ships{
@@ -34,6 +35,5 @@ class PlayerShip extends Ships{
 
         return laser;
     }
-
 
 }

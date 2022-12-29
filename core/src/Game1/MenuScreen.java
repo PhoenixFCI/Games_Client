@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -14,7 +13,6 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.phoenix.MultipleScreen;
@@ -34,14 +32,20 @@ public class MenuScreen implements Screen
     private final int World_width = Gdx.graphics.getWidth();
     private final int World_height = Gdx.graphics.getHeight();
 
-    private Label labelStart, labelExit, labelNormal,labelHard, labelEasy;
+    private Label labelStart, labelExit, labelNormal,labelHard, labelEasy, labelMulti;
 
     private Skin mySkin;
     private Music music;
 
 
+    //For Modes
     public static int playerShieldAmount, enemySpeed, enemyShieldAmount, enemyLaserSpeed;
     public static float enemyTimeShot;
+    private boolean modeChecked;
+
+
+    //MultiPlayer
+    public static boolean multiOrNot;
 
     public MenuScreen(MultipleScreen x)
     {
@@ -51,6 +55,8 @@ public class MenuScreen implements Screen
     @Override
     public void show()
     {
+
+        modeChecked = false;
 
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
@@ -78,14 +84,19 @@ public class MenuScreen implements Screen
 
 
         //Creating the labels and adding actions for them
-        labelStart = new Label("Start",mySkin);
+        labelStart = new Label("SinglePlayer",mySkin);
         labelStart.setSize(labelStart.getWidth()*3,labelStart.getHeight()*3);
+        labelStart.setPosition((int)(Gdx.graphics.getWidth()/2) - labelStart.getWidth()/2, (int)(Gdx.graphics.getHeight()/2));
         labelStart.setFontScale(3,3);
-        labelStart.setPosition((Gdx.graphics.getWidth()/2) - labelStart.getWidth()/2, Gdx.graphics.getHeight()/2);
+
+        labelMulti = new Label("MultiPlayer",mySkin);
+        labelMulti.setSize(labelMulti.getWidth()*3,labelMulti.getHeight()*3);
+        labelMulti.setPosition(labelStart.getX() + (Gdx.graphics.getWidth() * 0.015f), labelStart.getY() - labelMulti.getHeight() - (Gdx.graphics.getHeight() * 0.02f));
+        labelMulti.setFontScale(3,3);
 
         labelExit = new Label("Exit",mySkin);
         labelExit.setSize(labelExit.getWidth() * 3,labelExit.getHeight() * 3);
-        labelExit.setPosition(labelStart.getX() + (labelExit.getWidth() * 0.2f),labelStart.getY() - (labelStart.getY() * 0.35f));
+        labelExit.setPosition(labelMulti.getX() + (labelMulti.getWidth() / 3), labelMulti.getY() - labelExit.getHeight() - (Gdx.graphics.getHeight() * 0.02f));
         labelExit.setFontScale(3,3);
 
 
@@ -111,7 +122,10 @@ public class MenuScreen implements Screen
             @Override
             public void clicked(InputEvent event, float x, float y)
             {
-                multi.changeScreen( new MainScreen(multi));
+                multiOrNot = false;
+                if(modeChecked) {
+                    multi.changeScreen(new MainScreen(multi));
+                }
             }
 
             @Override
@@ -125,6 +139,28 @@ public class MenuScreen implements Screen
             }
         });
 
+
+        labelMulti.addListener(new ClickListener()
+        {
+            @Override
+            public void clicked(InputEvent event, float x, float y)
+            {
+                multiOrNot = true;
+                if(modeChecked) {
+                    multi.changeScreen(new MainScreen(multi));
+                }
+            }
+
+            @Override
+            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                labelMulti.setColor(Color.RED);
+            }
+
+            @Override
+            public void exit(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                labelMulti.setColor(Color.WHITE);
+            }
+        });
 
         labelExit.addListener(new ClickListener()
         {
@@ -164,6 +200,8 @@ public class MenuScreen implements Screen
                     labelHard.setColor(Color.WHITE);
                     labelHard.setTouchable(Touchable.enabled);
                 }
+
+                modeChecked = true;
 
                 //Initialize the variables
                 playerShieldAmount = 7;
@@ -210,6 +248,8 @@ public class MenuScreen implements Screen
                     labelHard.setTouchable(Touchable.enabled);
                 }
 
+                modeChecked = true;
+
                 //Initialize the variables
                 playerShieldAmount = 5;
 
@@ -255,6 +295,7 @@ public class MenuScreen implements Screen
                     labelNormal.setTouchable(Touchable.enabled);
                 }
 
+                modeChecked = true;
 
                 //initialize the variables
                 playerShieldAmount = 3;
@@ -287,6 +328,7 @@ public class MenuScreen implements Screen
         stage.addActor(labelNormal);
         stage.addActor(labelHard);
         stage.addActor(labelEasy);
+        stage.addActor(labelMulti);
     }
 
 

@@ -89,6 +89,7 @@ public class Client implements Screen
 			@Override
 			public void clicked(InputEvent event, float x, float y)
 			{
+				Gdx.graphics.setForegroundFPS(144);
 				multi.changeScreen( new MenuScreen(multi));
 			}
 
@@ -108,6 +109,7 @@ public class Client implements Screen
 			@Override
 			public void clicked(InputEvent event, float x, float y)
 			{
+				Gdx.graphics.setForegroundFPS(60);
 				multi.changeScreen( new GameScreen(multi));
 			}
 

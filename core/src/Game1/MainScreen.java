@@ -87,10 +87,10 @@ public class MainScreen implements Screen
 
 
     //Game Objects
-    private PlayerShip playership;
+    private PlayerShip playership,playership2;
     private LinkedList<EnemyShip> enemyshipsList;
 
-    private LinkedList<Lasers> playerLaserList, enemyLaserList;
+    private LinkedList<Lasers> playerLaserList,playerLaserList2, enemyLaserList;
     private LinkedList<Explosion> explosionList;
 
 
@@ -152,6 +152,15 @@ public class MainScreen implements Screen
         //set up game objects
         playership = new PlayerShip(400,playerShieldAmount,90,90,World_width/2,World_height/4,
                 4,23,450,0.6f,playerShipTexture,playerShield,playerLaser);
+
+        if(MenuScreen.multiOrNot)
+        {
+            System.out.println(true);
+            playership2 = new PlayerShip(400,playerShieldAmount,90,90,World_width/2,World_height/4,
+                    4,23,450,0.6f,playerShipTexture,playerShield,playerLaser);
+            playerLaserList2 = new LinkedList<>();
+        }
+
         enemyshipsList = new LinkedList<>();
 
         playerLaserList = new LinkedList<>();
@@ -185,17 +194,24 @@ public class MainScreen implements Screen
                     state = State.PAUSE;
                 }
 
-                if (playership.lives > 0) {
+                if (playership.lives > 0 || (playership2.lives > 0 && MenuScreen.multiOrNot))
+                {
                     batch.begin();
 
                     renderBackground(delta);
 
                     inputs(delta);
                     playership.update(delta);
+
+                    if(MenuScreen.multiOrNot)
+                    {
+                        playership2.update(delta);
+                    }
                     spawnEnemy(delta);
 
                     ListIterator<EnemyShip> enemyiterator = enemyshipsList.listIterator();
-                    while (enemyiterator.hasNext()) {
+                    while (enemyiterator.hasNext())
+                    {
                         EnemyShip enemyship = enemyiterator.next();
                         moveEnemies(enemyship, delta);
                         enemyship.update(delta);
@@ -209,11 +225,25 @@ public class MainScreen implements Screen
                     renderLasers(delta);
 
                     //player ships
-                    playership.draw(batch);
+                    if(playership.lives > 0)
+                    {
+                        playership.draw(batch);
+                    }
+
+
+                    if(MenuScreen.multiOrNot)
+                    {
+                        playership2.draw(batch);
+                    }
 
 
                     //Collision
                     Collisions();
+
+                    if(MenuScreen.multiOrNot)
+                    {
+                        Collisions2();
+                    }
 
                     //explosions
                     renderExplosions(delta);
@@ -322,7 +352,8 @@ public class MainScreen implements Screen
     private void renderLasers(float delta)
     {
 
-        if(Gdx.input.isKeyPressed(Input.Keys.SPACE))
+        //Player 1 shooting
+        if(Gdx.input.isKeyPressed(Input.Keys.SPACE) && playership.lives > 0)
         {
             if(playership.canFireLaser())
             {
@@ -334,6 +365,26 @@ public class MainScreen implements Screen
                 {
                     playerLaserList.add(laser);
                 }
+            }
+
+        }
+
+
+        if(MenuScreen.multiOrNot)
+        {
+            //Player 2 shooting
+            if (Gdx.input.isButtonPressed(Input.Buttons.LEFT) && playership2.lives > 0)
+            {
+                if (playership2.canFireLaser()) {
+                    long id = laserSound.play(1.0f);
+                    laserSound.setLooping(id, false);
+
+                    Lasers[] lasers = playership2.fireLasers();
+                    for (Lasers laser : lasers) {
+                        playerLaserList2.add(laser);
+                    }
+                }
+
             }
         }
 
@@ -366,6 +417,21 @@ public class MainScreen implements Screen
         }
 
 
+        //Draw Lasers for player 2
+        if(MenuScreen.multiOrNot)
+        {
+            ListIterator<Lasers> iterator2 = playerLaserList2.listIterator(); //going through the list of playerLaser to add or remove ... etc
+            while (iterator2.hasNext()) {
+                Lasers laser = iterator2.next();
+                laser.draw(batch);
+                laser.boundingBox.y += laser.m_speed * delta; //Player Laser speed
+                if (laser.boundingBox.y > World_height) {
+                    iterator2.remove();
+                }
+            }
+        }
+
+        //Draw Enemy Laser
         iterator = enemyLaserList.listIterator(); //going through the list of enemylaser to add or remove ... etc
         while(iterator.hasNext())
         {
@@ -411,11 +477,11 @@ public class MainScreen implements Screen
 
 
         //for each enemy laser, check whether it intersects the player ship
-        iterator = enemyLaserList.listIterator(); //going through the list of playerLaser to add or remove ... etc
+        iterator = enemyLaserList.listIterator(); //going through the list of enemyLaser to add or remove ... etc
         while(iterator.hasNext())
         {
             Lasers laser = iterator.next();
-            if(playership.intersects(laser.boundingBox))
+            if(playership.intersects(laser.boundingBox) && playership.lives > 0)
             {
                 if(playership.Shield == 1)
                 {
@@ -427,24 +493,86 @@ public class MainScreen implements Screen
                 {
                     explosionList.add(new Explosion(explosion,new Rectangle(playership.boundingBox),1.4f));
                     playership.lives--;
-                    playership.Shield = 5;
+                    playership.Shield = playerShieldAmount;
                     once = true;
                 }
+
                 iterator.remove();
             }
         }
 
 
-        if(playership.Shield == 5 && once)
+        if(playership.Shield == MenuScreen.playerShieldAmount && once)
         {
             long id = ShieldUpSound.play(1.0f);
             ShieldUpSound.setLooping(id,false);
             once = false;
         }
-
     }
 
 
+    private void Collisions2()
+    {
+        //for each player laser, check whether it intersects an enemy ship
+        ListIterator<Lasers> iterator = playerLaserList2.listIterator(); //going through the list of playerLaser to add or remove ... etc
+        while(iterator.hasNext())
+        {
+            Lasers laser = iterator.next();
+            ListIterator<EnemyShip> temp = enemyshipsList.listIterator();
+
+            while(temp.hasNext())
+            {
+                EnemyShip enemyship = temp.next();
+                if(enemyship.intersects(laser.boundingBox))
+                {
+                    //removing when hitting the enemy
+                    if(enemyship.hit(laser))
+                    {
+                        temp.remove();
+                        explosionList.add(new Explosion(explosion,new Rectangle(enemyship.boundingBox),0.7f));
+                        EnemyCounter--;
+                        score++;
+                    }
+                    iterator.remove();
+                    break;
+                }
+            }
+        }
+
+
+        //for each enemy laser, check whether it intersects the player ship
+        iterator = enemyLaserList.listIterator(); //going through the list of playerLaser to add or remove ... etc
+        while(iterator.hasNext())
+        {
+            Lasers laser = iterator.next();
+            if(playership2.intersects(laser.boundingBox) && playership2.lives > 0)
+            {
+                if(playership2.Shield == 1)
+                {
+                    long id = ShieldDownSound.play(1.0f);
+                    ShieldDownSound.setLooping(id,false);
+                }
+                //removing when hitting the player
+                if(playership2.hit(laser))
+                {
+                    explosionList.add(new Explosion(explosion,new Rectangle(playership2.boundingBox),1.4f));
+                    playership2.lives--;
+                    playership2.Shield = playerShieldAmount;
+                    once = true;
+                }
+
+                iterator.remove();
+            }
+        }
+
+
+        if(playership2.Shield == MenuScreen.playerShieldAmount && once)
+        {
+            long id = ShieldUpSound.play(1.0f);
+            ShieldUpSound.setLooping(id,false);
+            once = false;
+        }
+    }
 
 
     private void moveEnemies(EnemyShip enemyship,float delta)
@@ -485,7 +613,7 @@ public class MainScreen implements Screen
     //movmenets and world limit @Menna Ammar
     private void inputs(float delta)
     {
-        //keyboard input
+        //keyboard input for player 1
         float leftlimit, rightlimit, uplimit, downlimit;
         leftlimit = -playership.boundingBox.x;
         downlimit = -playership.boundingBox.y;
@@ -523,8 +651,39 @@ public class MainScreen implements Screen
         {
             playership.translate(0f,Math.max(-playership.m_speed*delta,downlimit));
         }
-    }
 
+
+        //checks if it is multiplayer or not
+        if(MenuScreen.multiOrNot)
+        {
+            //KeyBoard inputs for player 2
+            float leftlimit2, rightlimit2, uplimit2, downlimit2;
+            leftlimit2 = -playership2.boundingBox.x;
+            downlimit2 = -playership2.boundingBox.y;
+
+            rightlimit2 = World_width - playership2.boundingBox.x - playership2.boundingBox.width;
+            uplimit2 = (World_height / 2) - playership2.boundingBox.y - playership2.boundingBox.height;
+
+            if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && rightlimit2 > 0) {
+                playership2.translate(Math.min(playership2.m_speed * delta, rightlimit2), 0f);
+            }
+
+            //moving upward
+            if (Gdx.input.isKeyPressed(Input.Keys.UP) && uplimit2 > 0) {
+                playership2.translate(0f, Math.min(playership2.m_speed * delta, uplimit2));
+            }
+
+            //moving left
+            if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && leftlimit2 < 0) {
+                playership2.translate(Math.max(-playership2.m_speed * delta, leftlimit2), 0f);
+            }
+
+            //Moving downward
+            if (Gdx.input.isKeyPressed(Input.Keys.DOWN) && downlimit2 < 0) {
+                playership2.translate(0f, Math.max(-playership2.m_speed * delta, downlimit2));
+            }
+        }
+    }
 
 
     private void Modes()
@@ -636,6 +795,11 @@ public class MainScreen implements Screen
 
         //player ships
         playership.draw(batch);
+
+        if(MenuScreen.multiOrNot)
+        {
+            playership2.draw(batch);
+        }
 
 
         //explosions
