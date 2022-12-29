@@ -16,7 +16,7 @@ import com.phoenix.MultipleScreen;
 import java.util.Random;
 
 
-public class GameScreen  implements Screen {
+public class GameScreen extends StartScreen implements Screen {
     MultipleScreen game;
     public enum State
     {
@@ -31,14 +31,9 @@ public class GameScreen  implements Screen {
     public static State state = State.RUN;
 
     //graphics
-    public static Texture backgroundTexture;
-    private static SpriteBatch batch;
+    private SpriteBatch batch;
     private Player player;
     private Texture playerRunTexture,enemyTexture;
-    //private Motions animation;
-
-    //timing
-    public static float BackgroundMove;
 
     //World parameters
     public static final float WorldWidth= Gdx.graphics.getWidth();
@@ -62,8 +57,10 @@ public class GameScreen  implements Screen {
     private Sound jumpSound;
     private Music backMusic;
 
-    public GameScreen(MultipleScreen screen){
-        game =screen;
+    public GameScreen(MultipleScreen screen)
+    {
+        super(screen);
+        this.game =screen;
     }
 
     @Override
@@ -75,7 +72,6 @@ public class GameScreen  implements Screen {
         viewport = new StretchViewport(WorldWidth,WorldHeight,camera);
         //textures and objects in the game:
 
-        backgroundTexture = new Texture("Robot/background2.jpg");
         playerRunTexture =new Texture("Robot/Run.png");
         enemyTexture=new Texture("Robot/pxArt.png");
         player=new Player(playerRunTexture, playerRunTexture.getWidth()*0.95f, playerRunTexture.getHeight(),40,3);
@@ -102,6 +98,7 @@ public class GameScreen  implements Screen {
             case RUN:
                 BackgroundMove++;
                 BackgroundMove=BackgroundMove%WorldWidth;
+
                 backMusic.play();
                 player.update(delta);
                 if(Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
@@ -127,7 +124,7 @@ public class GameScreen  implements Screen {
                 EnemyDil();
                 addScore();
                 batch.begin();
-                drawBackground(batch);
+                StartScreen.drawBackground(batch);
                 player.draw(batch);
                 drawEnemies();
                 drawScore();
@@ -146,7 +143,7 @@ public class GameScreen  implements Screen {
                 }
                 camera.update();
                 batch.begin();
-                drawBackground(batch);
+                StartScreen.drawBackground(batch);
                 player.draw(batch);
                 drawEnemies();
                 drawScore();
@@ -243,10 +240,7 @@ public class GameScreen  implements Screen {
                 currentScore++;
         }
     }
-    public static void drawBackground(SpriteBatch batch){
-        batch.draw(backgroundTexture,-BackgroundMove,0,WorldWidth,WorldHeight);
-        batch.draw(backgroundTexture,-BackgroundMove+WorldWidth,0,WorldWidth,WorldHeight);
-    }
+
     public void drawEnemies(){
         for (int i = 0; i < enemies.size; i++) {
             enemies.get(i).draw(batch);
