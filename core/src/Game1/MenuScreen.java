@@ -91,7 +91,7 @@ public class MenuScreen implements Screen
 
         labelMulti = new Label("MultiPlayer",mySkin);
         labelMulti.setSize(labelMulti.getWidth()*3,labelMulti.getHeight()*3);
-        labelMulti.setPosition(labelStart.getX() + (Gdx.graphics.getWidth() * 0.015f), labelStart.getY() - labelMulti.getHeight() - (Gdx.graphics.getHeight() * 0.02f));
+        labelMulti.setPosition(labelStart.getX() + (labelStart.getWidth() / 2) - (labelMulti.getWidth() / 2), labelStart.getY() - labelMulti.getHeight() - (Gdx.graphics.getHeight() * 0.02f));
         labelMulti.setFontScale(3,3);
 
         labelExit = new Label("Exit",mySkin);

@@ -154,9 +154,10 @@ public class GameScreen  implements Screen {
 
 
     @Override
-    public void resize(int width, int height) {
+    public void resize(int width, int height)
+    {
+        //viewport = new FillViewport(width,height);
         viewport.update(width,height);
-
     }
 
     @Override

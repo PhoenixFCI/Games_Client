@@ -90,6 +90,7 @@ public class Client implements Screen
 			public void clicked(InputEvent event, float x, float y)
 			{
 				Gdx.graphics.setForegroundFPS(144);
+				//Gdx.graphics.setResizable(true);
 				multi.changeScreen( new MenuScreen(multi));
 			}
 
