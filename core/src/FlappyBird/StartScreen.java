@@ -4,6 +4,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -19,14 +20,18 @@ public class StartScreen implements Screen
     protected MultipleScreen sc;
 
     protected SpriteBatch batch;
-    public static Label startLabel, menuLabel, exitLabel;
+    protected static Label startLabel, menuLabel, exitLabel;
     protected  Stage stage;
     protected Label.LabelStyle labelStyle;
     protected GameFont govFont;
-    public static Texture backgroundTexture;
-    public static float BackgroundMove = 0;
-    public static final float WorldWidth= Gdx.graphics.getWidth();
-    public static final float WorldHeight=Gdx.graphics.getHeight();
+    protected static Texture backgroundTexture;
+    protected static float BackgroundMove = 0;
+    protected static final float WorldWidth= Gdx.graphics.getWidth();
+    protected static final float WorldHeight=Gdx.graphics.getHeight();
+    protected ShapeRenderer shapeRenderer;
+    protected String fontPath = "Robot/joystix.monospace-regular.ttf";
+
+    protected static GameFont scoreFont,title;
     public StartScreen(MultipleScreen sc)
     {
         this.sc = sc;
@@ -38,9 +43,11 @@ public class StartScreen implements Screen
         batch=new SpriteBatch();
         stage=new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
-
+        shapeRenderer = new ShapeRenderer();
+        shapeRenderer.setAutoShapeType(true);
 
         backgroundTexture = new Texture("Robot/background2.jpg");
+        scoreFont=new GameFont(fontPath,25,Color.WHITE,Color.BLACK,1);
 
         govFont=new GameFont("Robot/joystix.monospace-regular.ttf",25,Color.WHITE,Color.BLACK,1);
         labelStyle=new Label.LabelStyle();
@@ -145,9 +152,8 @@ public class StartScreen implements Screen
         BackgroundMove=BackgroundMove%WorldWidth;
 
         batch.begin();
-
         drawBackground(batch);
-
+        scoreFont.draw(batch,"High Score: "+GameScreen.prefs.getInteger("highScore"),(WorldWidth-scoreFont.getTextwidth())/1.05f,(WorldHeight-scoreFont.getTextheight()));
         batch.end();
 
         stage.act();

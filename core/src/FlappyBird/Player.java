@@ -5,7 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 
 public class Player extends Objects {
     private Vector2  velocity = new Vector2(0,0);
-    private static final int Gravity = -30;
+    private static final float Gravity = -50-(GameScreen.time*1.5f);
 
     public Player(Texture texture, float width, float height, float xPos, float yPos) {
         super(texture, width, height, xPos, yPos);
@@ -24,7 +24,7 @@ public class Player extends Objects {
 
     }
      void jump(){
-        velocity.y = 700;
+        velocity.y = 1000+(GameScreen.time*3);
     }
 
 

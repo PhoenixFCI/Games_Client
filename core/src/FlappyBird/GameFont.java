@@ -21,6 +21,11 @@ public class GameFont {
         this.parameter.borderWidth=borderWidth;
         this.font=fontGenerator.generateFont(parameter);
     }
+
+    public void setSize(int size){
+        this.parameter.size=size;
+        System.out.println(this.parameter.size);
+    }
     public void draw(SpriteBatch batch,String text,float x,float y){
         this.text.setText(font,text);
         font.draw(batch,text,x,y);

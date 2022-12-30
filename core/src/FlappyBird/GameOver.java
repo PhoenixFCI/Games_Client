@@ -1,21 +1,15 @@
 package FlappyBird;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.viewport.StretchViewport;
-import com.phoenix.Client;
 import com.phoenix.MultipleScreen;
 
 public class GameOver extends StartScreen
 {
-    private SpriteBatch batch;
 
     private  Label restartLabel;
     private MultipleScreen multi;
@@ -29,7 +23,8 @@ public class GameOver extends StartScreen
     public void show()
     {
         super.show();
-
+        GameScreen.time=4;
+        GameScreen.currentScore=0;
         stage.clear();
 
         restartLabel = new Label("Restart",labelStyle);
@@ -66,6 +61,8 @@ public class GameOver extends StartScreen
     public void render(float delta)
     {
         super.render(delta);
+        batch.begin();
+        batch.end();
     }
 
     @Override

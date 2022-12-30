@@ -27,11 +27,11 @@ public class GameScreen extends StartScreen implements Screen {
 
     }
 
-    private Preferences prefs = Gdx.app.getPreferences("game score");
+    protected static Preferences prefs = Gdx.app.getPreferences("game score");
     public static State state = State.RUN;
 
     //graphics
-    private SpriteBatch batch;
+    private static SpriteBatch batch;
     private Player player;
     private Texture playerRunTexture,enemyTexture;
 
@@ -40,8 +40,7 @@ public class GameScreen extends StartScreen implements Screen {
     public static final float WorldHeight=Gdx.graphics.getHeight();
 
     //font&score
-    private GameFont scoreFont;
-    private int  currentScore=0;
+    protected static int currentScore=0;
     private int highScore=prefs.getInteger("highScore",0);
 
     private Viewport viewport;
@@ -49,7 +48,8 @@ public class GameScreen extends StartScreen implements Screen {
 
     //enemy attributes
     private final Array<Enemies> enemies = new Array<>();
-    private final int distance=150;
+    private final float distance=225+time;
+    protected static float time=4;
     private boolean clicked=false;
     private Random rand;
 
@@ -75,17 +75,16 @@ public class GameScreen extends StartScreen implements Screen {
         playerRunTexture =new Texture("Robot/Run.png");
         enemyTexture=new Texture("Robot/pxArt.png");
         player=new Player(playerRunTexture, playerRunTexture.getWidth()*0.95f, playerRunTexture.getHeight(),40,3);
-        //Score font
-        String fontPath = "Robot/joystix.monospace-regular.ttf";
-        scoreFont=new GameFont(fontPath,25, Color.WHITE,Color.BLACK,1);
         rand=new Random();
+        //scoreFont
 
+        scoreFont=new GameFont(fontPath,25,Color.WHITE,Color.BLACK,1);
         //nothing
         jumpSound= Gdx.audio.newSound(Gdx.files.internal("Robot/Jump.ogg"));
         backMusic=Gdx.audio.newMusic(Gdx.files.internal("Robot/Dexters Laboratory.mp3"));
         backMusic.setLooping(true);
         backMusic.setVolume(0.5f);
-
+        StartScreen.scoreFont.setSize(25);
     }
 
 
@@ -106,12 +105,13 @@ public class GameScreen extends StartScreen implements Screen {
                     backMusic.pause();
                     jumpSound.pause();
                 }
+                System.out.println(enemies.size);
                 if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)&&player.getPosition().y<=5){
                     player.jump();
                     jumpSound.play();
                 }
 
-                if(Gdx.input.isKeyPressed(Input.Keys.BACKSPACE)&&clicked==false){
+                if(Gdx.input.isKeyPressed(Input.Keys.BACKSPACE)&& !clicked){
                     prefs.putInteger("highScore", 0);
                     prefs.flush();
                     clicked=true;
@@ -119,9 +119,9 @@ public class GameScreen extends StartScreen implements Screen {
 
 
                 //Enemies methods
-                updateEnemies();
+                time +=Gdx.graphics.getDeltaTime()/10;
+                updateEnemies(time);
                 spawnEnemies();
-                EnemyDil();
                 addScore();
                 batch.begin();
                 StartScreen.drawBackground(batch);
@@ -130,8 +130,8 @@ public class GameScreen extends StartScreen implements Screen {
                 drawScore();
                 batch.end();
                 if(collision()) {
-                    game.changeScreen(new GameOver(game));
                     highScore(currentScore);
+                    game.changeScreen(new GameOver(game));
                 }
                 break;
 
@@ -183,7 +183,6 @@ public class GameScreen extends StartScreen implements Screen {
         //backgroundTexture.dispose();
         enemyTexture.dispose();
         playerRunTexture.dispose();
-        scoreFont.dispose();
         jumpSound.dispose();
         backMusic.dispose();
         batch.dispose();
@@ -219,25 +218,17 @@ public class GameScreen extends StartScreen implements Screen {
         }
         return false;
     }
-    public void EnemyDil(){
-        Enemies firstEnemy= enemies.first();
-        if (firstEnemy.getPosition().x<-WorldWidth)
-            enemies.removeValue(firstEnemy,true);
 
-    }
-
-    public void drawScore(){
+    public static void drawScore(){
         scoreFont.draw(batch,"Score: "+currentScore,5,WorldHeight-scoreFont.getTextheight());
         scoreFont.draw(batch,"High Score: "+prefs.getInteger("highScore"),WorldWidth-scoreFont.getTextwidth()*2,WorldHeight-scoreFont.getTextheight());
     }
-    public void addScore(){
+    public void addScore() {
         for (int i = 0; i < enemies.size; i++) {
-            int temp =(int)enemies.get(i).getPosition().x;
-            while (temp%4!=0)
-                    temp++;
-
-            if (40==temp)
+            if (player.getCoordinates().x > enemies.get(0).getCoordinates().x + enemies.get(i).getCoordinates().width+40) {
                 currentScore++;
+                enemies.removeIndex(0);
+            }
         }
     }
 
@@ -247,9 +238,9 @@ public class GameScreen extends StartScreen implements Screen {
         }
     }
 
-    public void updateEnemies(){
+    public void updateEnemies(float time){
         for (int i = 0; i < enemies.size; i++) {
-            enemies.get(i).enemyUpdate(4);
+            enemies.get(i).enemyUpdate(time);
         }
     }
 }
