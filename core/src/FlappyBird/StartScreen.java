@@ -4,14 +4,12 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.phoenix.Client;
 import com.phoenix.MultipleScreen;
 
@@ -28,10 +26,9 @@ public class StartScreen implements Screen
     protected static float BackgroundMove = 0;
     protected static final float WorldWidth= Gdx.graphics.getWidth();
     protected static final float WorldHeight=Gdx.graphics.getHeight();
-    protected ShapeRenderer shapeRenderer;
     protected String fontPath = "Robot/joystix.monospace-regular.ttf";
 
-    protected static GameFont scoreFont,title;
+    protected static GameFont scoreFont;
     public StartScreen(MultipleScreen sc)
     {
         this.sc = sc;
@@ -43,8 +40,6 @@ public class StartScreen implements Screen
         batch=new SpriteBatch();
         stage=new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
-        shapeRenderer = new ShapeRenderer();
-        shapeRenderer.setAutoShapeType(true);
 
         backgroundTexture = new Texture("Robot/background2.jpg");
         scoreFont=new GameFont(fontPath,25,Color.WHITE,Color.BLACK,1);

@@ -14,10 +14,12 @@ public class Player extends Objects {
      void update(float dt)
     {
         if(position.y>0)
-            velocity.add(0,Gravity);    // gravity
-      velocity.scl(dt);
-        position.add(0.0f,velocity.y);
-        velocity.scl(1/dt);          // anti gravity
+            velocity.add(0,Gravity);// gravity
+
+         velocity.scl(dt);
+         position.add(0.0f,velocity.y);
+         velocity.scl(1/dt);// anti gravity
+
         if(position.y<0){
             position.y=0;
         }
