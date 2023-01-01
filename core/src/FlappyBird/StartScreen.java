@@ -28,7 +28,7 @@ public class StartScreen implements Screen
     protected static final float WorldHeight=Gdx.graphics.getHeight();
     protected String fontPath = "Robot/joystix.monospace-regular.ttf";
 
-    protected static GameFont scoreFont;
+    protected static GameFont highScoreFont;
     public StartScreen(MultipleScreen sc)
     {
         this.sc = sc;
@@ -42,8 +42,7 @@ public class StartScreen implements Screen
         Gdx.input.setInputProcessor(stage);
 
         backgroundTexture = new Texture("Robot/background2.jpg");
-        scoreFont=new GameFont(fontPath,25,Color.WHITE,Color.BLACK,1);
-
+        highScoreFont =new GameFont(fontPath,25,Color.WHITE,Color.BLACK,1);
         govFont=new GameFont("Robot/joystix.monospace-regular.ttf",25,Color.WHITE,Color.BLACK,1);
         labelStyle=new Label.LabelStyle();
         labelStyle.font=govFont.getFont();
@@ -148,9 +147,8 @@ public class StartScreen implements Screen
 
         batch.begin();
         drawBackground(batch);
-        scoreFont.draw(batch,"High Score: "+GameScreen.prefs.getInteger("highScore"),(WorldWidth-scoreFont.getTextwidth())/1.05f,(WorldHeight-scoreFont.getTextheight()));
+        highScoreFont.draw(batch,"High Score: "+GameScreen.prefs.getInteger("highScore"),(WorldWidth- highScoreFont.getTextwidth())/1.05f,(WorldHeight- highScoreFont.getTextheight()));
         batch.end();
-
         stage.act();
         stage.draw();
     }

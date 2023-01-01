@@ -42,6 +42,7 @@ public class GameScreen extends StartScreen implements Screen {
     //font&score
     protected static int currentScore=0;
     private int highScore=prefs.getInteger("highScore",0);
+    private GameFont currentScoreFont;
 
     private Viewport viewport;
     private Camera camera;
@@ -78,13 +79,14 @@ public class GameScreen extends StartScreen implements Screen {
         rand=new Random();
         //scoreFont
 
-        scoreFont=new GameFont(fontPath,25,Color.WHITE,Color.BLACK,1);
+        highScoreFont =new GameFont(fontPath,25,Color.WHITE,Color.BLACK,1);
+        currentScoreFont =new GameFont(fontPath,25,Color.WHITE,Color.BLACK,1);
         //nothing
         jumpSound= Gdx.audio.newSound(Gdx.files.internal("Robot/Jump.ogg"));
         backMusic=Gdx.audio.newMusic(Gdx.files.internal("Robot/Dexters Laboratory.mp3"));
         backMusic.setLooping(true);
         backMusic.setVolume(0.5f);
-        StartScreen.scoreFont.setSize(25);
+        StartScreen.highScoreFont.setSize(25);
     }
 
 
@@ -97,7 +99,6 @@ public class GameScreen extends StartScreen implements Screen {
             case RUN:
                 BackgroundMove++;
                 BackgroundMove=BackgroundMove%WorldWidth;
-
                 backMusic.play();
                 player.update(delta);
                 if(Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
@@ -124,12 +125,12 @@ public class GameScreen extends StartScreen implements Screen {
                 spawnEnemies();
                 addScore();
                 batch.begin();
-                StartScreen.drawBackground(batch);
+                drawBackground(batch);
                 player.draw(batch);
                 drawEnemies();
                 drawScore();
                 batch.end();
-                if(collision()) {
+                if(collision()||Gdx.input.isKeyPressed(Input.Keys.H)) {
                     highScore(currentScore);
                     game.changeScreen(new GameOver(game));
                 }
@@ -219,9 +220,9 @@ public class GameScreen extends StartScreen implements Screen {
         return false;
     }
 
-    public static void drawScore(){
-        scoreFont.draw(batch,"Score: "+currentScore,5,WorldHeight-scoreFont.getTextheight());
-        scoreFont.draw(batch,"High Score: "+prefs.getInteger("highScore"),WorldWidth-scoreFont.getTextwidth()*2,WorldHeight-scoreFont.getTextheight());
+    public void drawScore(){
+        currentScoreFont.draw(batch,"Score: "+currentScore,5,WorldHeight- currentScoreFont.getTextheight());
+        highScoreFont.draw(batch,"High Score: "+prefs.getInteger("highScore"),(WorldWidth- highScoreFont.getTextwidth())/1.05f,WorldHeight- highScoreFont.getTextheight());
     }
     public void addScore() {
         for (int i = 0; i < enemies.size; i++) {

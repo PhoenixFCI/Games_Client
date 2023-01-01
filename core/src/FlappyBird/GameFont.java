@@ -24,7 +24,12 @@ public class GameFont {
 
     public void setSize(int size){
         this.parameter.size=size;
-        System.out.println(this.parameter.size);
+        this.font=fontGenerator.generateFont(parameter);
+    }
+
+    public void setColor(Color color){
+        this.parameter.color=color;
+        this.font=fontGenerator.generateFont(parameter);
     }
     public void draw(SpriteBatch batch,String text,float x,float y){
         this.text.setText(font,text);
@@ -34,6 +39,10 @@ public class GameFont {
         return this.font=fontGenerator.generateFont(parameter);
     }
 
+    public void setFont(String Path ){
+        this.fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal(Path));
+        this.font=fontGenerator.generateFont(parameter);
+    }
     public void dispose(){
         font.dispose();
         fontGenerator.dispose();

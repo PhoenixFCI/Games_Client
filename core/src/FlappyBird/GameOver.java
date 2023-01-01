@@ -12,11 +12,11 @@ public class GameOver extends StartScreen
 {
 
     private  Label restartLabel;
-    private MultipleScreen multi;
+    private int currentScore;
+    private GameFont currentScoreFont;
     public GameOver(MultipleScreen sc)
     {
         super(sc);
-        multi = sc;
     }
 
     @Override
@@ -24,9 +24,13 @@ public class GameOver extends StartScreen
     {
         super.show();
         GameScreen.time=4;
+        this.currentScore=GameScreen.currentScore;
         GameScreen.currentScore=0;
-        stage.clear();
 
+        highScoreFont.setSize(40);
+        highScoreFont.setColor(Color.GOLD);
+        currentScoreFont=new GameFont(fontPath,30,Color.LIGHT_GRAY,Color.BLACK,1);
+        stage.clear();
         restartLabel = new Label("Restart",labelStyle);
         restartLabel.setSize(restartLabel.getWidth()*1.5f, restartLabel.getHeight()*1.25f);
         restartLabel.setFontScale(1.5f,1.5f);
@@ -60,9 +64,15 @@ public class GameOver extends StartScreen
     @Override
     public void render(float delta)
     {
-        super.render(delta);
+        BackgroundMove++;
+        BackgroundMove=BackgroundMove%WorldWidth;
         batch.begin();
+        drawBackground(batch);
+        highScoreFont.draw(batch,"High Score: "+GameScreen.prefs.getInteger("highScore"),(WorldWidth- highScoreFont.getTextwidth())/2f,(WorldHeight- highScoreFont.getTextheight())/2);
+        currentScoreFont.draw(batch,"Your Score: "+this.currentScore,(WorldWidth-currentScoreFont.getTextwidth())/2f,(WorldHeight-currentScoreFont.getTextheight())/2.5f);
         batch.end();
+        stage.act();
+        stage.draw();
     }
 
     @Override
@@ -83,6 +93,8 @@ public class GameOver extends StartScreen
     @Override
     public void dispose()
     {
+        currentScoreFont.dispose();
+        highScoreFont.dispose();
         stage.dispose();
     }
 
