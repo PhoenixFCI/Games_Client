@@ -5,10 +5,7 @@ import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.*;
@@ -41,7 +38,7 @@ public class GameScreen extends StartScreen implements Screen {
 
     //font&score
     protected static int currentScore=0;
-    private int highScore=prefs.getInteger("highScore",0);
+    private final int  highScore=prefs.getInteger("highScore",0);
     private GameFont currentScoreFont;
 
     private Viewport viewport;
@@ -79,7 +76,8 @@ public class GameScreen extends StartScreen implements Screen {
         rand=new Random();
         //scoreFont
 
-        highScoreFont =new GameFont(fontPath,25,Color.WHITE,Color.BLACK,1);
+        highScoreFont.setColor(Color.GOLD);
+        highScoreFont.setSize(25);
         currentScoreFont =new GameFont(fontPath,25,Color.WHITE,Color.BLACK,1);
         //nothing
         jumpSound= Gdx.audio.newSound(Gdx.files.internal("Robot/Jump.ogg"));
@@ -164,13 +162,13 @@ public class GameScreen extends StartScreen implements Screen {
     @Override
     public void pause()
     {
-        this.state = State.PAUSE;
+        state = State.PAUSE;
     }
 
     @Override
     public void resume()
     {
-        this.state = State.RUN;
+        state = State.RUN;
     }
 
     @Override
@@ -234,14 +232,12 @@ public class GameScreen extends StartScreen implements Screen {
     }
 
     public void drawEnemies(){
-        for (int i = 0; i < enemies.size; i++) {
+        for (int i = 0; i < enemies.size; i++)
             enemies.get(i).draw(batch);
-        }
     }
 
     public void updateEnemies(float time){
-        for (int i = 0; i < enemies.size; i++) {
+        for (int i = 0; i < enemies.size; i++)
             enemies.get(i).enemyUpdate(time);
-        }
     }
 }
